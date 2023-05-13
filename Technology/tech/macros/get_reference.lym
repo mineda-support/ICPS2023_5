@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<klayout-macro>
+ <description>Get reference for Mineda2022_6</description>
+ <version/>
+ <category/>
+ <prolog/>
+ <epilog/>
+ <doc/>
+ <autorun>false</autorun>
+ <autorun-early>false</autorun-early>
+ <priority>0</priority>
+ <shortcut/>
+ <show-in-menu>true</show-in-menu>
+ <group-name/>
+ <menu-path/>
+ <interpreter>ruby</interpreter>
+ <dsl-interpreter-name/>
+ <text># get_reference v0.1, Dec. 26th, 2022 copy right Seijiro Moriyama (Anagix Corp.)
+module MyMacro
+  include RBA
+  #include MinedaLVSpreprop
+            
+  MinedaLVS.new.lvs_go 'Mineda2022_6', {
+    device: {NMOS: 'NCH', PMOS: 'PCH'},
+    tolerance: {RES: {R: {relative: 0.03}},
+                 CAP: {C: {relative: 0.03}}},
+    flatten_circuit: ['Nch*', 'Pch*'] 
+  }  
+end
+</text>
+</klayout-macro>

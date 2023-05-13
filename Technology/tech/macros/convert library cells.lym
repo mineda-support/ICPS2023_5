@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<klayout-macro>
+ <description/>
+ <version/>
+ <category/>
+ <prolog/>
+ <epilog/>
+ <doc/>
+ <autorun>false</autorun>
+ <autorun-early>false</autorun-early>
+ <priority>0</priority>
+ <shortcut/>
+ <show-in-menu>false</show-in-menu>
+ <group-name/>
+ <menu-path/>
+ <interpreter>ruby</interpreter>
+ <dsl-interpreter-name/>
+ <text>module MyMacro
+  include MinedaCommon
+  go = ConvertPCells.new 'ICPS2023_5'
+  go.do_convert_library_cells({
+    # layer_map: '/home/seijirom/.klayout/salt/PTS06/Technology/tech/OR_to_PTS.txt',
+    routing_scale_factor: $rsf || 1, pcell_scale_factor: $psf || 1
+  })
+end
+</text>
+</klayout-macro>

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<klayout-macro>
+ <description/>
+ <version/>
+ <category/>
+ <prolog/>
+ <epilog/>
+ <doc/>
+ <autorun>false</autorun>
+ <autorun-early>false</autorun-early>
+ <priority>0</priority>
+ <shortcut/>
+ <show-in-menu>false</show-in-menu>
+ <group-name/>
+ <menu-path/>
+ <interpreter>ruby</interpreter>
+ <dsl-interpreter-name/>
+ <text>module MyMacro
+ 
+  include RBA
+
+  app = Application.instance
+  mw = app.main_window
+  unless lv = mw.current_view
+    raise "Shape Statistics: No view selected"
+  end
+  cell = lv.active_cellview.cell
+  layout = cell.layout
+  
+  parea_src = layout.layer(2, 0)
+  narea_src = layout.layer(3, 0)
+  diff_src = layout.layer(4, 0)
+  cnt_src = layout.layer(6, 0)  
+  ml1_src = layout.layer(7, 0)
+  via1_src = layout.layer(8, 0)  
+  ml2_src  = layout.layer(9, 0)
+  pad_src = layout.layer(10, 0)
+  #frame_src = layout.layer(14, 0)
+    
+  unless layout.layer_indices.include? 18
+    puts 'conversion start'
+    # YSS source layout definitions
+
+    # OpenRule destination layout definitions
+    parea_dst = layout.layer(18, 0)
+    layout.move_layer(parea_src, parea_dst) # 2 -&gt; 18    
+    narea_dst = layout.layer(19, 0)
+    layout.move_layer(narea_src, narea_dst) #  3 -&gt; 19    
+    diff_dst = layout.layer(3, 0) 
+    layout.move_layer(diff_src, diff_dst) # 4 -&gt; 3
+
+    pad_dst = layout.layer(50, 0)
+    layout.move_layer(pad_src, pad_dst) # 10 -&gt; 50
+    ml2_dst= layout.layer(10, 0) 
+    layout.move_layer(ml2_src, ml2_dst) # 9 -&gt; 10 
+    via1_dst = layout.layer(9, 0) 
+    layout.move_layer(via1_src, via1_dst) # 8 -&gt; 9     
+    ml1_dst = layout.layer(8,0)
+    layout.move_layer(ml1_src, ml1_dst) # 7 -&gt; 8
+    cnt_dst = layout.layer(7, 0)
+    layout.move_layer(cnt_src, cnt_dst) # 6 -&gt; 7  
+
+       
+    #frame_dst = layout.layer(14, 0)
+    #layout.move_layer(frame_src, frame_dst)
+
+    puts 'conversion end'
+  else
+    #  derived layers
+  end
+  # text = input(13, 0)
+  # res = input(15, 0)
+  # cap = input(16, 0)
+  # dio = input(17, 0)
+
+  
+  #  lv.remove_unused_layers
+
+end
+
+</text>
+</klayout-macro>

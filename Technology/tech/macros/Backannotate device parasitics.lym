@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<klayout-macro>
+ <description>Backannotate device parasitics</description>
+ <version/>
+ <category/>
+ <prolog/>
+ <epilog/>
+ <doc/>
+ <autorun>false</autorun>
+ <autorun-early>false</autorun-early>
+ <priority>0</priority>
+ <shortcut/>
+ <show-in-menu>true</show-in-menu>
+ <group-name/>
+ <menu-path/>
+ <interpreter>ruby</interpreter>
+ <dsl-interpreter-name/>
+ <text>module MyMacro
+ 
+  include BackannotateModule
+  ba = Backannotate.new NCH: 'NMOS', PCH: 'PMOS'
+  ba.do_backannotate
+
+end
+
+</text>
+</klayout-macro>

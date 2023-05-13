@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<klayout-macro>
+ <description>Display Xsection for Mineda2021_2</description>
+ <version/>
+ <category/>
+ <prolog/>
+ <epilog/>
+ <doc/>
+ <autorun>false</autorun>
+ <autorun-early>false</autorun-early>
+ <shortcut/>
+ <show-in-menu>true</show-in-menu>
+ <group-name/>
+ <menu-path/>
+ <interpreter>ruby</interpreter>
+ <dsl-interpreter-name/>
+ <text># XsectionUI for Mineda2021_2 v0.16 by S. Moriyama June 18th, 2021
+#                                      v0.13 fixed DIFF-CUT by Chikau Takahashi June 7th, 2021
+module MyMacro
+  include RBA
+  $soi_check = nil
+  eng = DRC::DRCEngine::new
+  eng.instance_eval do
+    soi = input(4,0)
+    $soi_check = soi.area
+    if $soi_check == 0 # for designers
+      diff = input(3, 0) 
+      tin = input(5, 0).raw
+      cap = input(16,0)
+      parea = input(18, 0)
+      narea = input(19, 0)
+#      new_parea = parea - tin
+#      new_narea = narea - tin
+      new_parea = (parea &amp; diff ).sized(2.0)  -  (tin - cap)
+      new_narea = (narea &amp; diff ).sized(2.0)  -  (tin - cap) 
+      tin_gate = tin.interacting(diff) - cap
+      tin_rest = tin - tin_gate 
+      bb = (diff + tin_gate ).extents
+      tin_gate_enlarged = tin_gate.sized(2.0.um) &amp; bb
+      (tin +tin_gate_enlarged).output(21, 0) # tin
+    end
+  end
+  eng._finish(false)
+  
+  mw = Application.instance.main_window
+  view_index = mw.current_view_index
+  layout_view = mw.current_view
+  
+  load File.join(File.dirname(__FILE__), "../../../xsection/ruby/xsection.rb")
+  include XS
+  xs = XSectionScriptEnvironment.new
+  xs_view_index = mw.views
+  xs.run_script File.join(File.dirname(__FILE__), "../YSS-SOI-CMOS.xs")
+  if $soi_check == 0
+    mw.select_view view_index
+    layout = mw.current_view.active_cellview.cell.layout
+    # puts "layout=#{layout.inspect}"
+    # layout_view.each_layer{|l| puts "ind=#{ind=l.layer_index}"}
+    layout_view.each_layer{|l|
+    ind = l.layer_index
+    if ind &gt; 0 &amp;&amp;  (info = layout.get_info(ind)) &amp;&amp; [4,21].include?(info.layer)
+      puts "@#{ind} info.layer=#{info.layer}"
+      layout.delete_layer(ind)
+     end
+    }
+  end
+  if mw.views-1 &gt;= xs_view_index
+      xs_view_index.upto(mw.views-1){|xv_index|
+      xv = mw.view(xv_index).cellview(0)
+      top_cell = xv.layout.top_cell
+      xs = xv.layout.create_cell 'xs'
+      xs.insert CellInstArray.new top_cell.cell_index, ICplxTrans.new
+      lv = mw.view(view_index)
+      cv_created = lv.show_layout(xs.layout, true)
+      layer_props_file = File.join(File.dirname(__FILE__), "../YSS-SOI-CMOS_Xsection.lyp")
+      layout_view.load_layer_props layer_props_file, cv_created, false
+    } 
+    mw.select_view view_index    
+  end
+end
+
+</text>
+</klayout-macro>

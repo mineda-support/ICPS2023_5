@@ -1,0 +1,596 @@
+<?xml version="1.0" encoding="utf-8"?>
+<klayout-macro>
+ <description/>
+ <version/>
+ <category/>
+ <prolog/>
+ <epilog/>
+ <doc/>
+ <autorun>true</autorun>
+ <autorun-early>false</autorun-early>
+ <priority>0</priority>
+ <shortcut/>
+ <show-in-menu>false</show-in-menu>
+ <group-name/>
+ <menu-path/>
+ <interpreter>ruby</interpreter>
+ <dsl-interpreter-name/>
+ <text># ICPS2023_5 PCells v0.2 May 13th 2023 Copy right by S. Moriyama (Anagix Corporation)
+# based on Mineda2022_6 v0.44 Feb. 3rd 2023
+module ICPS2023_5
+
+  include MinedaPCell
+  ICPS2023_5.constants.member?(:Nch) &amp;&amp; remove_const(:Nch)
+  ICPS2023_5.constants.member?(:Pch) &amp;&amp; remove_const(:Pch)
+  ICPS2023_5.constants.member?(:R_ndiff) &amp;&amp; remove_const(:R_ndiff)
+  ICPS2023_5.constants.member?(:R_pdiff) &amp;&amp; remove_const(:R_pdiff)
+  ICPS2023_5.constants.member?(:R_soi) &amp;&amp; remove_const(:R_soi)
+  # ICPS2023_5.constants.member?(:MIM_cap) &amp;&amp; remove_const(:MIM_cap)
+  ICPS2023_5.constants.member?(:Ndiff_cap) &amp;&amp; remove_const(:Ndiff_cap) 
+  ICPS2023_5.constants.member?(:Pdiff_cap) &amp;&amp; remove_const(:Pdiff_cap) 
+  ICPS2023_5.constants.member?(:TIN_cap) &amp;&amp; remove_const(:TIN_cap) 
+  #ICPS2023_5.constants.member?(:Bridge) &amp;&amp; remove_const(:Bridge) 
+  #ICPS2023_5.constants.member?(:Nbridge) &amp;&amp; remove_const(:Nbridge) 
+  ICPS2023_5.constants.member?(:PCells) &amp;&amp; remove_const(:PCells)
+  
+  # The PCell declaration for ICPS2023_5 MOSFET
+  
+  class Nch &lt; MinedaNch_SOI
+    include RBA
+    def initialize
+      super
+      param(:w, TypeDouble, "Nch w", :default =&gt; 20.0.um)
+      param(:l, TypeDouble, "Nch l", :default =&gt; 10.0.um)
+      # param(:n, TypeInt, "Number of fingers", :default =&gt; 1)
+      param(:dg, TypeDouble, "Dumbbell gap", :default =&gt; 4.um, :hidden =&gt; false)
+      param(:sdg, TypeDouble, "Source Drain gap", :default =&gt; 22.0.um, :hidden =&gt; false)
+      param(:with_pcont, TypeBoolean, "Use polysilicon contact", :default =&gt; true)
+      param(:with_via, TypeBoolean, "Put Via over contacts", :default =&gt; true, :hidden =&gt; false)
+      param(:with_sdcont, TypeBoolean, "Use source/drain contact", :default =&gt; true)   
+      param(:with_psubcont, TypeBoolean, "Use psub contact", :default =&gt; false, :hidden =&gt; false)
+      param(:use_pwell, TypeBoolean, "Use pwell", :default =&gt; false, :hidden =&gt; true)  
+      param(:wide_metal, TypeBoolean, "Wide metal entry?", :default =&gt; false, :hidden =&gt; true)
+      param(:soi_bridge, TypeBoolean, "Bridge TiN gate over SOI edge?", :default =&gt; true)
+      param(:body_tie, TypeBoolean, "Body tie?", :default =&gt; false, :hidden=&gt; false)
+      param(:wtot, TypeDouble, "Total width", :default =&gt; 0, :hidden=&gt; true)
+    end
+    
+    def coerce_parameters_impl
+      l &lt; 6.0 &amp;&amp; set_l(6.0)
+      w &lt; 10.0 &amp;&amp; set_w(10.0)
+      super
+    end
+    
+    def produce_impl # NMOS
+      nwl_index = layout.insert_layer(LayerInfo::new(1, 0)) # N well
+      diff_index = layout.insert_layer(LayerInfo::new(3, 0))
+      tin_index = layout.insert_layer(LayerInfo::new(5, 0))
+      tin_block_index = layout.insert_layer(LayerInfo::new(5, 1))
+      cnt_index = layout.insert_layer(LayerInfo::new(7,0))
+      narea_index = layout.insert_layer(LayerInfo::new(19, 0))
+      parea_index = layout.insert_layer(LayerInfo::new(18, 0))
+      m1_index = layout.insert_layer(LayerInfo::new(8, 0))
+      m2_index = layout.insert_layer(LayerInfo::new(10, 0))
+      via_index = library_cell('Via', 'ICPS2023_5_Basic', layout)
+      pwell_index = layout.insert_layer(LayerInfo::new(21,0))
+      dcont_index = library_cell('dcont', 'ICPS2023_5_Basic', layout)
+      pcont_index = library_cell('pcont', 'ICPS2023_5_Basic', layout)
+      psubcont_index = library_cell('psubcont', 'ICPS2023_5_Basic', layout) 
+      indices = {pol: tin_index, diff: diff_index, nwl: nwl_index, pwell:  pwell_index,
+                 parea: parea_index, narea: narea_index, m1: m1_index, via: via_index,
+                 dcont: dcont_index, pcont: pcont_index, psubcont: psubcont_index,
+                 tin_block: tin_block_index, cnt: cnt_index}
+      s = 9.0.um # via size (fixed) 
+      vs = (s/layout.dbu).to_i
+      grid = 4.0.um
+      u1 = (grid/layout.dbu).to_i
+      super indices, vs, u1, {xshift: 0, yshift:0, 
+                              pol_width: u1 + u1 + u1/4,
+                              gate_ext: vs/2, pcont_dy: 0, dcont_offset: true,
+                              psubcont_dx: 0, psubcont_dy: u1/2, narea_bw: u1, 
+                              tin_block: tin_block_index}
+    end
+  end
+  
+  class Pch &lt; MinedaPch_SOI
+    include RBA
+    def initialize
+      super
+      param(:w, TypeDouble, "Pch w", :default =&gt; 40.0.um)
+      param(:l, TypeDouble, "Pch l", :default =&gt; 10.0.um)
+      param(:dg, TypeDouble, "Dumbbell gap", :default =&gt; 4.um, :hidden =&gt; false)
+      param(:sdg, TypeDouble, "Source Drain gap", :default =&gt; 22.0.um, :hidden =&gt; false)
+      param(:with_pcont, TypeBoolean, "Use polysilicon contact", :default =&gt; true)
+      param(:with_via, TypeBoolean, "Put Via over contacts", :default =&gt; true, :hidden =&gt; false)
+      param(:with_sdcont, TypeBoolean, "Use source/drain contact", :default =&gt; true)
+      param(:with_nsubcont, TypeBoolean, "Use nsub contact", :default =&gt; false, :hidden =&gt; false)
+      param(:use_nwell, TypeBoolean, "Use nwell", :default =&gt; false, :hidden =&gt; false) 
+      param(:wide_metal, TypeBoolean, "Wide metal entry?", :default =&gt; false, :hidden =&gt; true)
+      param(:soi_bridge, TypeBoolean, "Bridge TiN gate over SOI edge?", :default =&gt; true)
+      param(:body_tie, TypeBoolean, "Body tie?", :default =&gt; false, :hidden=&gt; true)
+      param(:wtot, TypeDouble, "Total width", :default =&gt; 0, :hidden=&gt; true)
+    end 
+
+    def coerce_parameters_impl
+      l &lt; 6.0 &amp;&amp; set_l(6.0)
+      w &lt; 10.0 &amp;&amp; set_w(10.0)
+      super
+    end
+    
+    def produce_impl # PMOS
+      nwl_index = layout.insert_layer(LayerInfo::new(1, 0)) # N well
+      diff_index = layout.insert_layer(LayerInfo::new(3, 0))
+      tin_index = layout.insert_layer(LayerInfo::new(5, 0))
+      tin_block_index = layout.insert_layer(LayerInfo::new(5, 1))
+      cnt_index = layout.insert_layer(LayerInfo::new(7,0))
+      narea_index = layout.insert_layer(LayerInfo::new(19, 0))
+      parea_index = layout.insert_layer(LayerInfo::new(18, 0))
+      m1_index = layout.insert_layer(LayerInfo::new(8, 0))
+      m2_index = layout.insert_layer(LayerInfo::new(10, 0))
+      via_index = library_cell('Via', 'ICPS2023_5_Basic', layout)
+      dcont_index = library_cell('dcont', 'ICPS2023_5_Basic', layout)
+      pcont_index = library_cell('pcont', 'ICPS2023_5_Basic', layout)
+      nsubcont_index = library_cell('nsubcont', 'ICPS2023_5_Basic', layout)
+      indices = {pol: tin_index, diff: diff_index, nwl: nwl_index,
+                 parea: parea_index, narea: narea_index, m1: m1_index, via: via_index,
+                 dcont: dcont_index, pcont: pcont_index, nsubcont: nsubcont_index,
+                 tin_block: tin_block_index, cnt: cnt_index}
+      s = 9.0.um # via size (fixed) 
+      vs = (s/layout.dbu).to_i
+      grid = 4.0.um
+      u1 = (grid/layout.dbu).to_i
+      super indices, vs, u1, {xshift: 0, yshift:0, 
+                              pol_width: u1 + u1 + u1/4, 
+                              gate_ext: vs/2, pcont_dy: 0, dcont_offset: true,
+                              nsubcont_dy: u1/2, parea_bw: u1/2, 
+                              tin_block: tin_block_index}
+    end
+  end
+
+  class R_soi &lt; MinedaResistor
+    include MinedaPCell
+    def initialize
+      super
+      param(:l, TypeDouble, "Resistor length", :default =&gt; 40.0.um)
+      param(:w, TypeDouble, "Resistor width", :default =&gt; 10.0.um)
+      param(:n, TypeInt, "Number of maximum stripes", :default =&gt; 1)
+      param(:s, TypeDouble, "Space between stripes", :default =&gt; 6.0.um)
+      param(:m, TypeDouble, "Maximum stripe length", :default =&gt; 1000.0.um)
+      param(:ho, TypeBoolean, "Headers outside?", :default =&gt; false)
+      param(:rval, TypeDouble, "Resistor value", :default =&gt; 0, :hidden=&gt; true)
+    end
+
+    def display_text_impl
+      if n &gt; 1
+        "R_soi\r\n(L=#{l.round(3)}um,W=#{w.round(3)}um,n=#{n.to_s},s=#{s}um =&gt; R=#{rval.round(3)})"
+      else
+        "R_soi\r\n(L=#{l.round(3)}um,W=#{w.round(3)}um,n=#{n.round(3)} =&gt; R=#{rval.round(3)})"
+      end
+    end
+    def produce_impl(indices = {}, head = :narea)
+      indices[:diff] = layout.insert_layer(LayerInfo::new(3, 0))
+      indices[:dcont] = library_cell('dcont', 'Mineda_2022_6_Basic', layout)
+
+      indices[:m1] = layout.insert_layer(LayerInfo::new(8, 0))
+      indices[:m2] = layout.insert_layer(LayerInfo::new(10, 0))
+      indices[:res] = layout.insert_layer(LayerInfo::new(15, 0))
+      # via_index = layout.insert_layer(LayerInfo::new(25, 0))
+      indices[:via] = library_cell('Via', 'Mineda_2022_6_Basic', layout)
+      indices[:parea] = layout.insert_layer(LayerInfo::new(18, 0))
+      indices[:narea] = layout.insert_layer(LayerInfo::new(19, 0))
+      indices[:nwl] = layout.insert_layer(LayerInfo::new(1, 0))
+      s = 9.0.um # via size (fixed)
+      vs = (s/layout.dbu).to_i
+      grid = 4.0.um
+      u1 = (grid/layout.dbu).to_i
+      rectangle, rw_ho = super indices, ho ? 1:0 , vs, u1
+      x1, y1, x2, y2 = rectangle
+      # create_box indices[head], x1-u1/2, y1-u1/2-rw_ho, x1 + vs + u1/2,  y1 + rw_ho + vs + u1/2
+      # create_box indices[head], x2 - vs - u1/2, y2 - vs -u1/2 , x2+u1/2, y2+u1/2
+       [indices, rectangle, u1, rw_ho]
+    end
+    def coerce_parameters_impl
+      sheet_resistance = 250e6
+      set_rval(sheet_resistance * l / w)
+    end    
+  end
+
+  class R_ndiff &lt; R_soi
+    include RBA
+    
+    def display_text_impl
+      if n &gt; 1
+        "R_ndiff\r\n(L=#{l.round(3)}um,W=#{w.round(3)}um,n=#{n.to_s},s=#{s}um =&gt; R=#{rval.round(3)})"
+      else
+        "R_ndiff\r\n(L=#{l.round(3)}um,W=#{w.round(3)}um,n=#{n.to_s} =&gt; R=#{rval.round(3)})"
+      end
+    end
+    def produce_impl
+      indices, rectangle, u1, rw_ho = super
+      x1, y1, x2, y2 = rectangle
+      create_box indices[:narea], x1-u1/2, y1-u1/2-rw_ho, x2+u1/2, y2+u1/2
+    end
+    def coerce_parameters_impl
+      sheet_resistance = ENV['SOI_CMOS_NRES'] ? ENV['SOI_CMOS_NRES'].to_f : 81.0  # AIST?:180
+      set_rval(sheet_resistance * l / w)
+    end
+  end
+
+  class R_pdiff &lt; R_soi
+    include RBA
+    def initialize
+      super
+      param(:use_nwell, TypeBoolean, "Use Nwell", :default =&gt; false)
+    end
+    def display_text_impl
+      if n &gt; 1
+        "R_pdiff\r\n(L=#{l.round(3)}um,W=#{w.round(3)}um,n=#{n.to_s},s=#{s}um =&gt; R=#{rval.round(3)})"
+      else
+        "R_pdiff\r\n(L=#{l.round(3)}um,W=#{w.round(3)}um,n=#{n.to_s} =&gt; R=#{rval.round(3)})"
+      end
+    end
+    def produce_impl
+      indices, rectangle, u1, rw_ho = super
+      x1, y1, x2, y2 = rectangle     
+      create_box indices[:parea], x1-u1/2, y1-u1/2-rw_ho, x2+u1/2, y2+u1/2
+      create_box indices[:nwl], x1-u1*2, y1-u1*2-rw_ho, x2+u1*2, y2+u1*2 if use_nwell
+    end
+    def coerce_parameters_impl
+      sheet_resistance = ENV['SOI_CMOS_PRES'] ? ENV['SOI_CMOS_PRES'].to_f : 5280  # AIST?: 1520
+      set_rval(sheet_resistance * l / w)
+    end
+  end
+
+  class TIN_cap &lt; MinedaCapacitor
+    def initialize
+      # Important: initialize the super class
+      super
+      param(:l, TypeDouble, "Capacitor length", :default =&gt; 100.0.um)
+      param(:w, TypeDouble, "Capacitor width", :default =&gt; 100.0.um)
+      param(:cval, TypeDouble, "Capacitor value", :default =&gt; 0, :hidden=&gt; true)
+    end
+    
+    def display_text_impl
+      # Provide a descriptive text for the cell
+      "TIN Capacitor\r\n(L=#{l.to_s}um,W=#{w.to_s}um,C=#{cval})"
+    end
+    
+    def coerce_parameters_impl
+      area_cap = 0.115e-15 # 0.23e-15
+      set_cval(area_cap * l * w)
+    end
+    
+    def produce_impl
+      cw = (w/layout.dbu).to_i
+      cl = (l/layout.dbu).to_i
+      grid = 4.0.um
+      u1 = (grid/layout.dbu).to_i
+      u2 = u1 + u1
+      s = 9.0.um # via size (fixed)
+      vs = (s/layout.dbu).to_i
+      tin_index = layout.insert_layer(LayerInfo::new(5, 0))
+      m1_index = layout.insert_layer(LayerInfo::new(8, 0))
+      m2_index = layout.insert_layer(LayerInfo::new(10, 0))
+      cap_index = layout.insert_layer(LayerInfo::new(16, 0))
+      via_index = layout.insert_layer(LayerInfo::new(9, 0))
+      #cnt_index = layout.insert_layer(LayerInfo::new(7,0))
+      dcont_index = library_cell('dcont', 'Mineda_2022_6_Basic', layout)
+      pcont_index = library_cell('pcont', 'Mineda_2022_6_Basic', layout)
+      via_index = library_cell('Via', 'Mineda_2022_6_Basic', layout)
+      indices = {m1: m1_index, m2: m2_index, via: via_index, 
+                 pol: tin_index, pcont: pcont_index, dcont: dcont_index}
+      offset = vs+ u2+u1/2+u1/8
+      create_box m1_index, 0, 0, offset + cw +u1, cl
+      create_box cap_index, offset, 0, offset + cw, cl
+      create_box tin_index, offset, -u1, offset + cw , cl+u2+vs
+      # create_box m2_index, offset, -u1, offset + cw , cl+u2+vs
+      #create_contacts_vertically indices[:via], u1+vs/2, 0, u1+vs/2, cl, vs, u1
+      create_contacts_horizontally indices, u1+vs+u2 + u1/2,  cl + u1+vs/2, 
+                                   offset + cw, cl + u1+vs/2, vs, u1
+      #create_contacts_horizontally indices, :via, u1+vs+u2 + u1/2,  cl + u1+vs/2, 
+      #                                                         offset + cw, cl + u1+vs/2, vs, u1
+
+
+      #          points = [Point::new(offset, vs), Point::new(offset, vs/2+r)]
+      #          cell.shapes(pol_index).insert(Path::new(points, rw, vs, vs))
+      #          cell.shapes(res_index).insert(Path::new(points, rw, vs/4, vs/4))
+    end
+  end
+
+  class Diff_cap &lt; MinedaDiff_cap
+    def initialize
+      # Important: initialize the super class
+      super
+      param(:l, TypeDouble, "Capacitor length", :default =&gt; 100.0.um)
+      param(:w, TypeDouble, "Capacitor width", :default =&gt; 100.0.um)
+      param(:cval, TypeDouble, "Capacitor value", :default =&gt; 0, :hidden=&gt; true)
+    end
+
+    def produce_impl area_index=nil, well_index=nil
+      grid = 4.0.um
+      u1 = (grid/layout.dbu).to_i
+      u2 = u1 + u1
+      s = 9.0.um # via size (fixed)
+      vs = (s/layout.dbu).to_i
+      
+      diff_index = layout.insert_layer(LayerInfo::new(3, 0)) 
+      tin_index = layout.insert_layer(LayerInfo::new(5, 0))    
+      m1_index = layout.insert_layer(LayerInfo::new(8, 0))
+      m2_index = layout.insert_layer(LayerInfo::new(10, 0))
+      cap_index = layout.insert_layer(LayerInfo::new(16, 0))
+      via_index = library_cell('Via', 'ICPS2023_5_Basic', layout)
+      dcont_index = library_cell('dcont', 'ICPS2023_5_Basic', layout)
+      pcont_index = library_cell('pcont', 'ICPS2023_5_Basic', layout)
+
+      indices = {diff: diff_index, pol: tin_index, m1: m1_index, m2: m2_index, 
+                 cap: cap_index, via: via_index, dcont: dcont_index, 
+                 pcont: pcont_index}
+      super indices, vs, u1, area_index, well_index
+    end
+  end
+  
+  class Ndiff_cap &lt; Diff_cap
+
+    def coerce_parameters_impl
+      area_cap = 1.72e-15
+      set_cval(area_cap * l * w)
+    end
+
+    def produce_impl
+      narea_index = layout.insert_layer(LayerInfo::new(19, 0))
+      super narea_index
+    end
+  end
+
+  class Pdiff_cap &lt; Diff_cap
+
+    def coerce_parameters_impl
+      area_cap = 1.72e-15
+      set_cval(area_cap * l * w)
+    end
+
+    def produce_impl
+      parea_index = layout.insert_layer(LayerInfo::new(18, 0))
+      # nwl_index = layout.insert_layer(LayerInfo::new(1, 0))
+      super parea_index, nwl_index = nil
+    end
+  end
+=begin
+     class Bridge &lt; MinedaPCell
+       include RBA
+       def initialize
+         super
+         param(:l, TypeDouble, "Bridge length", :default =&gt; 40.0.um)
+         param(:w, TypeDouble, "Bridge width", :default =&gt; 10.0.um)
+         param(:s, TypeString, "Side length", :default =&gt; '20')
+         param(:mb, TypeBoolean, "Metal bridge?", :default =&gt; false)
+         param(:nb,  TypeString, "Number of boost heads", :default =&gt; '0')
+         param(:rval, TypeDouble, "Resistor value", :default =&gt; 0, :hidden=&gt; true)
+       end
+       
+       # default implementation
+       def can_create_from_shape_impl
+         false
+       end
+       
+       def parameters_from_shape_impl
+       end
+       
+       def transformation_from_shape_impl
+         # I「Create PCell from shape（形状からPCellを作成）」プロトコルを実装します。
+         # 変形を決定するために、図形のバウンディングボックスの中心を使用します。
+         Trans.new(shape.bbox.center)
+       end
+       
+       def display_text_impl
+         if mb
+           "ML2 bridge\r\n(L=#{l.to_s}um,W=#{w.to_s}um, s=#{s}um"
+         else
+           "TIN bridge\r\n(L=#{l.to_s}um,W=#{w.to_s}um, s=#{s}um =&gt; R=#{rval.round(3)}"
+         end
+       end
+
+       def produce_impl
+         tin_index = layout.insert_layer(LayerInfo::new(5, 0))
+         cnt_index = layout.insert_layer(LayerInfo::new(7,0))
+         m1_index = layout.insert_layer(LayerInfo::new(8, 0))
+         via_index = layout.insert_layer(LayerInfo::new(9, 0))
+         m2_index = layout.insert_layer(LayerInfo::new(10, 0))
+         res_index = layout.insert_layer(LayerInfo::new(15, 0))
+         narea_index = layout.insert_layer(LayerInfo::new(19, 0))
+
+         indices = {m1: m1_index, m2: m2_index, via: via_index,
+                    cnt: cnt_index, res: res_index, tin: tin_index}
+         if mb
+           rectangle, u1 = produce_impl_core(indices, :m2, :via)
+         else
+           rectangle, u1 = produce_impl_core(indices, :tin, :cnt)
+         end
+       end 
+       def coerce_parameters_impl
+         sheet_resistance = 20 # temporary
+         set_rval(sheet_resistance * l / w)
+       end    
+       def create_contacts_horizontally indices, w, x0, y, vs, u1, body, head, ys, nb=nil
+         nb ||= 0
+         pitch = vs+u1/4  # cnt distance &gt; 5 um
+         n = (w/pitch).to_i
+         if ys &lt; y
+           up = 1
+           down = 0
+         else
+           up = 0
+           down = 1
+         end
+         (nb+1).times{|i|
+           if n &lt;= 1
+             # insert_cell indices, :via, x0, y, vs, u1, fill_metal
+             insert_cell indices, head, x0, y + (up - down)*i*pitch, vs, u1, true # false
+           #insert_cell indices, body, x0, y, vs, u1
+           else
+             offset = w- pitch*n
+             (x0-w/2 + offset/2 + pitch/2).step(x0+w/2-vs/2, pitch){|x|
+               insert_cell indices, head, x, y + (up - down)*i*pitch, vs, u1, false
+               #insert_cell indices, body, x, y, vs, u1
+             }
+             vs2 = vs + u1/4
+           end
+         }
+         x1 = x0-w/2
+         y1 = y-vs/2-u1/8*down - pitch*nb*down
+         x2 = x0+w/2
+         y2 = y+vs/2+u1/8*up + pitch*nb*up
+         create_box indices[:m1],  x1, y1, x2 , y2
+         create_box indices[body],  x1, y1, x2 , y2
+         create_box indices[:narea],  x1-u1/2 ,y1-u1/2 ,x2+u1/2, y2+u1/2 if body == :diff
+       end
+       
+       def create_contacts_vertically indices, w, x, y0, vs, u1, body, head, xs, nb = nil
+         nb ||= 0
+         pitch = vs+u1/4  # cnt distance &gt; 5 um
+         n = (w/pitch).to_i
+         if x &lt; xs
+           left = 1
+           right = 0
+         else
+           left = 0
+           right = 1
+         end
+         (nb+1).times{|i|
+           if n &lt;= 1
+             # insert_cell indices, :via, x0, y, vs, u1, fill_metal
+             insert_cell indices, head, x + (right - left)*i*pitch, y0, vs, u1, true # false
+           #insert_cell indices, body, x, y0, vs, u1
+           else
+             offset = w- pitch*n
+             (y0-w/2 + offset/2 + pitch/2).step(y0+w/2-vs/2, pitch){|y|
+               insert_cell indices, head, x + (right - left)*i*pitch  , y, vs, u1, false
+             }
+             vs2 = vs + u1/4
+           end
+         }
+         x1 = x-vs/2-u1/8*left - pitch*nb*left
+         y1 =  y0-w/2
+         x2 =  x+vs/2+u1/8*right + pitch*nb*right
+         y2 =  y0+w/2
+         create_box indices[:m1], x1 ,y1 ,x2, y2
+         create_box indices[body], x1 ,y1 ,x2, y2
+         create_box indices[:narea], x1-u1/2 ,y1-u1/2 ,x2+u1/2, y2+u1/2 if body == :diff
+       end
+       
+       def produce_impl_core(indices, body, head)
+         rw = (w/layout.dbu).to_i
+         rl = (l/layout.dbu).to_i
+         via_size = 9.0.um # via size (fixed)
+         vs = (via_size/layout.dbu).to_i
+         sl = s.split(/[,\s]+/).map{|s| (s.to_f/layout.dbu).to_i}
+         rrl = rl.abs + sl.map{|a| a.abs}.sum
+         grid = 4.0.um
+         u1 = (grid/layout.dbu).to_i
+         metal1width = 10.0.um
+         m1w = (metal1width/layout.dbu).to_i
+         nbc = nb.split(/[,\s]+/).map &amp;:to_i
+         x = vs/2
+         y = (rl &gt; 0) ? vs : 0
+         ys = y + rl
+         create_contacts_horizontally indices, rw, x, vs/2, vs, u1, body, head, ys, nbc[0]
+         points = [Point::new(x, y), Point::new(x, ys)]
+         xs = x
+         xh = xs
+         yh = (rl &gt; 0 )? ys + vs/2 : ys - vs/2
+         p = -rl
+         count = 0
+         sl.each{|s| 
+           next if s == 0
+           if count % 2 == 0
+             xs = (p &gt; 0) ? xs - s : xs + s
+             xh = (p*s &gt; 0) ? xs - vs/2 : xs + vs/2
+             yh = ys
+           else 
+             ys = (p &gt; 0) ? ys - s : ys + s
+             yh = (p*s &gt; 0) ? ys - vs/2 : ys + vs/2
+             xh = xs
+           end
+           p = s
+           points &lt;&lt; Point::new(xs, ys)
+           count = count + 1
+         }
+         if count % 2 == 0
+           create_contacts_horizontally indices, rw, xh, yh, vs, u1, body, head, ys, nbc[1]||nbc[0]
+         else
+           create_contacts_vertically indices, rw, xh, yh, vs, u1, body, head, xs, nbc[1]||nbc[0]
+         end
+         cell.shapes(indices[body]).insert(Path::new(points, rw, 0, 0))
+         cell.shapes(indices[:res]).insert(Path::new(points, rw, 0, 0))  
+         cell.shapes(indices[:narea]).insert(Path::new(points, rw+u1, u1/2, u1/2)) if body == :diff 
+         [[[vs/2-rw/2, 0].min, vs - rw, vs/2+rw/2, vs+rl+vs+u1/4], u1]
+       end
+     end
+
+     class Nbridge &lt; Bridge
+       include RBA
+       
+       def display_text_impl
+         if mb
+           "ML2 bridge\r\n(L=#{l.to_s}um,W=#{w.to_s}um, s=#{s}um"
+         else
+           "Ndiff bridge\r\n(L=#{l.to_s}um,W=#{w.to_s}um, s=#{s}um =&gt; R=#{rval.round(3)}"
+         end
+       end
+
+       def produce_impl
+         diff_index = layout.insert_layer(LayerInfo::new(3, 0))
+         # tin_index = layout.insert_layer(LayerInfo::new(5, 0))
+         cnt_index = layout.insert_layer(LayerInfo::new(7,0))
+         m1_index = layout.insert_layer(LayerInfo::new(8, 0))
+         via_index = layout.insert_layer(LayerInfo::new(9, 0))
+         m2_index = layout.insert_layer(LayerInfo::new(10, 0))
+         res_index = layout.insert_layer(LayerInfo::new(15, 0))
+         narea_index = layout.insert_layer(LayerInfo::new(19, 0))
+
+         indices = {m1: m1_index, m2: m2_index, via: via_index,
+                    cnt: cnt_index, res: res_index, diff: diff_index, narea: narea_index}
+         if mb
+           rectangle, u1 = produce_impl_core(indices, :m2, :via)
+         else
+           rectangle, u1 = produce_impl_core(indices, :diff, :cnt)
+         end
+         x1, y1, x2, y2 = rectangle
+         # create_box indices[:narea], x1-u1/2, y1-u1/2, x2+u1/2, y2+u1/2
+       end
+       
+       def coerce_parameters_impl
+         sheet_resistance = 81
+         set_rval(sheet_resistance * l / w)
+       end     
+     end
+=end
+  class ICPS2023_5 &lt; Library
+    
+    def initialize  
+      # 説明を設定
+      self.description = "PCells"
+      
+      # PCell宣言を作成する
+      # layout.register_pcell("Resistor", Resistor::new)
+      layout.register_pcell("Nch", Nch::new)
+      layout.register_pcell("Pch", Pch::new)
+      layout.register_pcell("R_ndiff", R_ndiff::new)
+      layout.register_pcell("R_pdiff", R_pdiff::new)
+      layout.register_pcell("R_soi", R_soi::new)
+      # layout.register_pcell("MIM_cap", MIM_cap::new)
+      layout.register_pcell("Ndiff_cap", Ndiff_cap::new)
+      layout.register_pcell("Pdiff_cap", Pdiff_cap::new)
+      layout.register_pcell("TIN_cap", TIN_cap::new)
+      #      layout.register_pcell("Bridge", Bridge::new)
+      #     layout.register_pcell("Nbridge", Nbridge::new)
+      # "ICPS2023_5"という名前で登録します。
+      # その名前のライブラリがすでに存在していた場合は、その時点で置き換えられます。
+      register("PCells_ICPS2023_5")
+    end
+  end
+  # ライブラリをインスタンス化して登録する
+  ICPS2023_5::new
+end
+</text>
+</klayout-macro>

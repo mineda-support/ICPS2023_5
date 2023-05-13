@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<klayout-macro>
+ <description>Mineda2022_6 (SOI mixed) to SOI conversion</description>
+ <version/>
+ <category>drc</category>
+ <prolog/>
+ <epilog/>
+ <doc/>
+ <autorun>false</autorun>
+ <autorun-early>false</autorun-early>
+ <priority>0</priority>
+ <shortcut/>
+ <show-in-menu>true</show-in-menu>
+ <group-name/>
+ <menu-path/>
+ <interpreter>dsl</interpreter>
+ <dsl-interpreter-name>drc-dsl-xml</dsl-interpreter-name>
+ <text>target(source.path.sub(/\.(gds|GDS)/,"_converted\.\\1"))
+# 2021/6/6 initial version by Seijiro Moriyama
+# v0.9 added diode conversion by Swear Takahashi on July 12th, 2021
+# v0.91 convert cnt to g_cnt (L21) if inside TIN, and sd_cnt (L22) otherwise
+# v0.92 g_cnt tiny fix suggested by Swear Takahashi
+# v0.93 allowed to mix YSS SOI layers (w/o conversion) surrounded by NWell 
+# v0.94 renamed diff_keep to soi_keep
+# v0.95 bug fix: keep all SOI layers
+# v0.97 TIN &amp; PWell correction by Swear Takahashi on March 6th, 2022
+# v0.98 set deep mode to process hierarchically
+# v0.99 gate contact and s/d contact use same layer (6)
+
+deep
+dont_touch = input(63, 63)
+diff = input(3, 0).outside(dont_touch)
+tin = input(5, 0).outside(dont_touch).raw
+cnt = input(7, 0).outside(dont_touch)
+ml1 = input(8, 0) .outside(dont_touch)
+via1 = input(9, 0) .outside(dont_touch)
+ml2 = input(10, 0).outside(dont_touch)
+# text = input(13, 0)
+frame = input(14, 0).outside(dont_touch)
+res = input(15, 0).outside(dont_touch)
+cap =  input(16, 0).outside(dont_touch)
+cap = cap.sized(2.0) if cap.area &gt; 0.0
+#  cap = cap..outside(dont_touch)
+dio = input(17, 0).outside(dont_touch)
+parea = input(18, 0).outside(dont_touch)
+narea = input(19, 0).outside(dont_touch)
+pad = input(50, 0).outside(dont_touch)
+
+pwell1 = input(21,0)
+pwell = narea.interacting(tin).sized(2.0) + pwell1
+tin_t = input(5,1)
+
+dio2 = dio.sized(2.0) - (parea + narea)
+
+new_parea = (parea &amp; diff ).sized(2.0)  -  (tin - cap + dio2)
+new_narea = (narea &amp; diff ).sized(2.0)  -  (tin - cap + dio2) 
+
+tin_gate = tin.interacting(diff) - cap
+tin_rest = tin - tin_gate 
+bb = (diff + tin_gate ).extents
+tin_gate_enlarged = tin_gate.sized(2.0.um) &amp; bb
+
+bg_keep = input(0, 0).inside(dont_touch)
+parea_keep = input(2, 0).inside(dont_touch)
+narea_keep = input(3,0).inside(dont_touch)
+soi_keep = input(4, 0).inside(dont_touch)
+tin_keep = input(5, 0).inside(dont_touch)
+cnt_keep = input(6,0).inside(dont_touch)
+ml1_keep = input(7, 0).inside(dont_touch)
+via1_keep = input(8, 0).inside(dont_touch)
+ml2_keep = input(9, 0).inside(dont_touch)
+
+pad_keep = input(10, 0).inside(dont_touch)
+pwell_keep = input(13, 0).inside(dont_touch)
+g_cnt_keep = input(21, 0).inside(dont_touch)
+sd_cnt_keep = input(22, 0).inside(dont_touch)
+
+bg_keep.output(0, 0)
+(parea_keep+new_parea).output(2, 0)
+(narea_keep+new_narea).output(3, 0)
+(soi_keep+diff).output(4, 0) 
+(tin_keep+tin +tin_gate_enlarged+ tin_t).output(5, 0)
+cnt_keep.output(6, 0)
+(ml1_keep+ml1).output(7, 0)
+(via1_keep+via1).output(8, 0) 
+(ml2_keep+ml2).output(9, 0)
+(pad_keep+pad).output(10, 0)
+(pwell_keep+pwell).output(13, 0)
+g_cnt = cnt.inside(tin &amp; ml1)
+sd_cnt = cnt - g_cnt
+#(g_cnt_keep+g_cnt).output(21, 0)
+#(sd_cnt_keep+sd_cnt).output(22, 0)
+(g_cnt_keep+g_cnt).output(6, 0)
+(sd_cnt_keep+sd_cnt).output(6, 0)
+
+#frame.output(14, 0)
+#res.output(15, 0)
+#cap.output(16, 0)
+#dio.output(17, 0)
+
+
+
+
+
+
+puts source.path.sub('.gds', '_converted.gds') + ' created'</text>
+</klayout-macro>

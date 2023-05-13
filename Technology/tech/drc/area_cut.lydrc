@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<klayout-macro>
+ <description/>
+ <version/>
+ <category>drc</category>
+ <prolog/>
+ <epilog/>
+ <doc/>
+ <autorun>false</autorun>
+ <autorun-early>false</autorun-early>
+ <shortcut/>
+ <show-in-menu>false</show-in-menu>
+ <group-name>drc_scripts</group-name>
+ <menu-path>tools_menu.drc.end</menu-path>
+ <interpreter>dsl</interpreter>
+ <dsl-interpreter-name>drc-dsl-xml</dsl-interpreter-name>
+ <text>target(source.path.sub(/\.(gds|GDS)/,"_converted\.\\1"))
+diff = input(3, 0) 
+tin = input(5, 0)
+cnt = input(7, 0)
+ml1 = input(8, 0)
+via1 = input(9, 0) 
+ml2 = input(10, 0)
+text = input(13, 0)
+frame = input(14, 0)
+res = input(15, 0)
+cap = input(16, 0)
+dio = input(17, 0)
+parea = input(18, 0)
+narea = input(19, 0)
+pad = input(20, 0)
+
+new_parea = parea - tin.sized(-2.um)
+new_narea = narea - tin.sized(-2.um)
+
+diff.output(3, 0) 
+tin.output(5, 0)
+cnt.output(7, 0)
+ml1.output(8, 0)
+via1.output(9, 0) 
+ml2.output(10, 0)
+frame.output(14, 0)
+res.output(15, 0)
+cap.output(16, 0)
+dio.output(17, 0)
+new_parea.output(18, 0)
+new_narea.output(19, 0)
+pad.output(20, 0)
+
+puts source.path.sub('.gds', '_converted.gds') + ' created'</text>
+</klayout-macro>
