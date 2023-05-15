@@ -15,7 +15,7 @@
  <menu-path/>
  <interpreter>ruby</interpreter>
  <dsl-interpreter-name/>
- <text># ICPS2023_5 PCells v0.2 May 13th 2023 Copy right by S. Moriyama (Anagix Corporation)
+ <text># ICPS2023_5 PCells v0.3 May 14th 2023 Copy right by S. Moriyama (Anagix Corporation)
 # based on Mineda2022_6 v0.44 Feb. 3rd 2023
 module ICPS2023_5
 
@@ -80,12 +80,12 @@ module ICPS2023_5
                  parea: parea_index, narea: narea_index, m1: m1_index, via: via_index,
                  dcont: dcont_index, pcont: pcont_index, psubcont: psubcont_index,
                  tin_block: tin_block_index, cnt: cnt_index}
-      s = 9.0.um # via size (fixed) 
+      s = 13.0.um # via size (fixed) 
       vs = (s/layout.dbu).to_i
       grid = 4.0.um
       u1 = (grid/layout.dbu).to_i
       super indices, vs, u1, {xshift: 0, yshift:0, 
-                              pol_width: u1 + u1 + u1/4,
+                              pol_width: vs,
                               gate_ext: vs/2, pcont_dy: 0, dcont_offset: true,
                               psubcont_dx: 0, psubcont_dy: u1/2, narea_bw: u1, 
                               tin_block: tin_block_index}
@@ -135,12 +135,12 @@ module ICPS2023_5
                  parea: parea_index, narea: narea_index, m1: m1_index, via: via_index,
                  dcont: dcont_index, pcont: pcont_index, nsubcont: nsubcont_index,
                  tin_block: tin_block_index, cnt: cnt_index}
-      s = 9.0.um # via size (fixed) 
+      s = 13.0.um # via size (fixed) 
       vs = (s/layout.dbu).to_i
       grid = 4.0.um
       u1 = (grid/layout.dbu).to_i
       super indices, vs, u1, {xshift: 0, yshift:0, 
-                              pol_width: u1 + u1 + u1/4, 
+                              pol_width: vs, 
                               gate_ext: vs/2, pcont_dy: 0, dcont_offset: true,
                               nsubcont_dy: u1/2, parea_bw: u1/2, 
                               tin_block: tin_block_index}
@@ -179,7 +179,7 @@ module ICPS2023_5
       indices[:parea] = layout.insert_layer(LayerInfo::new(18, 0))
       indices[:narea] = layout.insert_layer(LayerInfo::new(19, 0))
       indices[:nwl] = layout.insert_layer(LayerInfo::new(1, 0))
-      s = 9.0.um # via size (fixed)
+      s = 13.0.um # via size (fixed)
       vs = (s/layout.dbu).to_i
       grid = 4.0.um
       u1 = (grid/layout.dbu).to_i
@@ -266,7 +266,7 @@ module ICPS2023_5
       grid = 4.0.um
       u1 = (grid/layout.dbu).to_i
       u2 = u1 + u1
-      s = 9.0.um # via size (fixed)
+      s = 13.0.um # via size (fixed)
       vs = (s/layout.dbu).to_i
       tin_index = layout.insert_layer(LayerInfo::new(5, 0))
       m1_index = layout.insert_layer(LayerInfo::new(8, 0))
@@ -310,7 +310,7 @@ module ICPS2023_5
       grid = 4.0.um
       u1 = (grid/layout.dbu).to_i
       u2 = u1 + u1
-      s = 9.0.um # via size (fixed)
+      s = 13.0.um # via size (fixed)
       vs = (s/layout.dbu).to_i
       
       diff_index = layout.insert_layer(LayerInfo::new(3, 0)) 
@@ -481,7 +481,7 @@ module ICPS2023_5
        def produce_impl_core(indices, body, head)
          rw = (w/layout.dbu).to_i
          rl = (l/layout.dbu).to_i
-         via_size = 9.0.um # via size (fixed)
+         via_size = 12.0.um # via size (fixed)
          vs = (via_size/layout.dbu).to_i
          sl = s.split(/[,\s]+/).map{|s| (s.to_f/layout.dbu).to_i}
          rrl = rl.abs + sl.map{|a| a.abs}.sum
