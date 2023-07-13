@@ -17,6 +17,7 @@
  <dsl-interpreter-name/>
  <text>def metalize_bridges cell, value
   cell.each_inst{|inst|
+    puts inst.cell.name
     if inst.cell.name == 'Bridge' || inst.cell.name == 'Nbridge'
       inst.change_pcell_parameter 'mb', value
     elsif inst.cell.child_instances &gt; 0

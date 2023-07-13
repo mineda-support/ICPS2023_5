@@ -15,12 +15,12 @@
  <menu-path/>
  <interpreter>ruby</interpreter>
  <dsl-interpreter-name/>
- <text># get_reference v0.1, Dec. 26th, 2022 copy right Seijiro Moriyama (Anagix Corp.)
+ <text># get_reference v0.1, July 13, 2023 copy right Seijiro Moriyama (Anagix Corp.)
 module MyMacro
   include RBA
   #include MinedaLVSpreprop
             
-  MinedaLVS.new.lvs_go 'Mineda2022_6', {
+  MinedaLVS.new.lvs_go 'ICPS2023_5', {
     device: {NMOS: 'NCH', PMOS: 'PCH'},
     tolerance: {RES: {R: {relative: 0.03}},
                  CAP: {C: {relative: 0.03}}},
