@@ -15,7 +15,7 @@
  <menu-path/>
  <interpreter>ruby</interpreter>
  <dsl-interpreter-name/>
- <text># ICPS2023_5 PCells v0.41 May 15th 2023 Copy right by S. Moriyama (Anagix Corporation)
+ <text># ICPS2023_5 PCells v0.42 July 18th 2023 Copy right by S. Moriyama (Anagix Corporation)
 # based on Mineda2022_6 v0.44 Feb. 3rd 2023
 module ICPS2023_5
 
@@ -75,11 +75,12 @@ module ICPS2023_5
       pwell_index = layout.insert_layer(LayerInfo::new(21,0))
       dcont_index = library_cell('dcont', 'ICPS2023_5_Basic', layout)
       pcont_index = library_cell('pcont', 'ICPS2023_5_Basic', layout)
+      pcont_min_index = library_cell('pcont_min', 'ICPS2023_5_Basic', layout)
       psubcont_index = library_cell('psubcont', 'ICPS2023_5_Basic', layout) 
       indices = {pol: tin_index, diff: diff_index, nwl: nwl_index, pwell:  pwell_index,
                  parea: parea_index, narea: narea_index, m1: m1_index, via: via_index,
-                 dcont: dcont_index, pcont: pcont_index, psubcont: psubcont_index,
-                 tin_block: tin_block_index, cnt: cnt_index}
+                 dcont: dcont_index, pcont: pcont_index, pcont_min: pcont_min_index,
+                 psubcont: psubcont_index, tin_block: tin_block_index, cnt: cnt_index}
       s = 13.0.um # via size (fixed) 
       vs = (s/layout.dbu).to_i
       grid = 4.0.um
@@ -130,11 +131,12 @@ module ICPS2023_5
       via_index = library_cell('Via', 'ICPS2023_5_Basic', layout)
       dcont_index = library_cell('dcont', 'ICPS2023_5_Basic', layout)
       pcont_index = library_cell('pcont', 'ICPS2023_5_Basic', layout)
+      pcont_min_index = library_cell('pcont_min', 'ICPS2023_5_Basic', layout)
       nsubcont_index = library_cell('nsubcont', 'ICPS2023_5_Basic', layout)
       indices = {pol: tin_index, diff: diff_index, nwl: nwl_index,
                  parea: parea_index, narea: narea_index, m1: m1_index, via: via_index,
-                 dcont: dcont_index, pcont: pcont_index, nsubcont: nsubcont_index,
-                 tin_block: tin_block_index, cnt: cnt_index}
+                 dcont: dcont_index, pcont: pcont_index, pcont_min: pcont_min_index,
+                 nsubcont: nsubcont_index, tin_block: tin_block_index, cnt: cnt_index}
       s = 13.0.um # via size (fixed) 
       vs = (s/layout.dbu).to_i
       grid = 4.0.um
