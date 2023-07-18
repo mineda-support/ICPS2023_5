@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <klayout-macro>
- <description>Mineda2022_6 (SOI mixed) to SOI conversion</description>
+ <description>ICPS2023_5 (SOI mixed) to SOI conversion</description>
  <version/>
  <category>drc</category>
  <prolog/>
@@ -8,7 +8,6 @@
  <doc/>
  <autorun>false</autorun>
  <autorun-early>false</autorun-early>
- <priority>0</priority>
  <shortcut/>
  <show-in-menu>true</show-in-menu>
  <group-name/>
@@ -39,7 +38,7 @@ ml2 = input(10, 0).outside(dont_touch)
 frame = input(14, 0).outside(dont_touch)
 res = input(15, 0).outside(dont_touch)
 cap =  input(16, 0).outside(dont_touch)
-cap = cap.sized(2.0) if cap.area &gt; 0.0
+#cap = cap.sized(2.0) if cap.area &gt; 0.0
 #  cap = cap..outside(dont_touch)
 dio = input(17, 0).outside(dont_touch)
 parea = input(18, 0).outside(dont_touch)
@@ -55,7 +54,7 @@ dio2 = dio.sized(2.0) - (parea + narea)
 new_parea = (parea &amp; diff ).sized(2.0)  -  (tin - cap + dio2)
 new_narea = (narea &amp; diff ).sized(2.0)  -  (tin - cap + dio2) 
 
-tin_gate = tin.interacting(diff) - cap
+tin_gate = tin.interacting(diff) - tin.overlapping(cap)
 tin_rest = tin - tin_gate 
 bb = (diff + tin_gate ).extents
 tin_gate_enlarged = tin_gate.sized(2.0.um) &amp; bb
@@ -94,9 +93,10 @@ sd_cnt = cnt - g_cnt
 (sd_cnt_keep+sd_cnt).output(6, 0)
 
 #frame.output(14, 0)
-#res.output(15, 0)
-#cap.output(16, 0)
-#dio.output(17, 0)
+# for LVS for Product
+res.output(15, 0)
+cap.output(16, 0)
+dio.output(17, 0)
 
 
 
