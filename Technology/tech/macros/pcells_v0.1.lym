@@ -15,7 +15,7 @@
  <menu-path/>
  <interpreter>ruby</interpreter>
  <dsl-interpreter-name/>
- <text># ICPS2023_5 PCells v0.42 July 18th 2023 Copy right by S. Moriyama (Anagix Corporation)
+ <text># ICPS2023_5 PCells v0.43 July 20th 2023 Copy right by S. Moriyama (Anagix Corporation)
 # based on Mineda2022_6 v0.44 Feb. 3rd 2023
 module ICPS2023_5
 
@@ -171,13 +171,13 @@ module ICPS2023_5
     end
     def produce_impl(indices = {}, head = :narea)
       indices[:diff] = layout.insert_layer(LayerInfo::new(3, 0))
-      indices[:dcont] = library_cell('dcont', 'Mineda_2022_6_Basic', layout)
+      indices[:dcont] = library_cell('dcont', 'ICPS2023_5_Basic', layout)
 
       indices[:m1] = layout.insert_layer(LayerInfo::new(8, 0))
       indices[:m2] = layout.insert_layer(LayerInfo::new(10, 0))
       indices[:res] = layout.insert_layer(LayerInfo::new(15, 0))
       # via_index = layout.insert_layer(LayerInfo::new(25, 0))
-      indices[:via] = library_cell('Via', 'Mineda_2022_6_Basic', layout)
+      indices[:via] = library_cell('Via', 'ICPS2023_5_Basic', layout)
       indices[:parea] = layout.insert_layer(LayerInfo::new(18, 0))
       indices[:narea] = layout.insert_layer(LayerInfo::new(19, 0))
       indices[:nwl] = layout.insert_layer(LayerInfo::new(1, 0))
@@ -276,9 +276,9 @@ module ICPS2023_5
       cap_index = layout.insert_layer(LayerInfo::new(16, 0))
       via_index = layout.insert_layer(LayerInfo::new(9, 0))
       #cnt_index = layout.insert_layer(LayerInfo::new(7,0))
-      dcont_index = library_cell('dcont', 'Mineda_2022_6_Basic', layout)
-      pcont_index = library_cell('pcont', 'Mineda_2022_6_Basic', layout)
-      via_index = library_cell('Via', 'Mineda_2022_6_Basic', layout)
+      dcont_index = library_cell('dcont', 'ICPS2023_5_Basic', layout)
+      pcont_index = library_cell('pcont', 'ICPS2023_5_Basic', layout)
+      via_index = library_cell('Via', 'ICPS2023_5_Basic', layout)
       indices = {m1: m1_index, m2: m2_index, via: via_index, 
                  pol: tin_index, pcont: pcont_index, dcont: dcont_index}
       offset = vs+ u2+u1/2+u1/8

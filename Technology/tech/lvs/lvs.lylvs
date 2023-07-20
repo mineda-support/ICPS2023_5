@@ -28,7 +28,42 @@ if settings = mi.get_settings
   end
 end
 if File.exist? reference
-  schematic reference
+class MOS4To3ConvertingSpiceReader &lt; RBA::NetlistSpiceReaderDelegate
+
+  def element(circuit, el, name, model, value, nets, params)
+    if el != "M" || nets.size != 4
+      # all other elements are left to the standard implementation
+      return super
+    end
+    # provide a device class
+    cls = circuit.netlist.device_class_by_name(model)
+    if ! cls
+      cls = RBA::DeviceClassMOS3Transistor::new
+      cls.name = model
+      circuit.netlist.add(cls)
+    end
+    # create a device
+    device = circuit.create_device(cls, name)
+    # and configure the device
+    [ "S", "G", "D" ].each_with_index do |t,index|
+      device.connect_terminal(t, nets[index])
+    end
+    # parameters in the model are given in micrometer units, so 
+    # we need to translate the parameter values from SI to um values:
+    device.set_parameter("W", (params["W"] || 0.0) * 1e6)
+    device.set_parameter("L", (params["L"] || 0.0) * 1e6)
+    # TODO: if required, add AS,AD,PS and PD ...
+    return true
+  end
+
+end
+
+# Instantiate a reader using the new delegate
+reader = RBA::NetlistSpiceReader::new(MOS4To3ConvertingSpiceReader::new)
+
+# Import the schematic with this reader
+#schematic("your_schematic.cir", reader)
+  schematic reference, reader
 end
 
 # Drawing layers
