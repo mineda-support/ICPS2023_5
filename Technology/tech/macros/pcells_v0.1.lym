@@ -101,7 +101,7 @@ module ICPS2023_5
       param(:l, TypeDouble, "Pch l", :default =&gt; 10.0.um)
       param(:dg, TypeDouble, "Dumbbell gap", :default =&gt; 4.um, :hidden =&gt; false)
       param(:sdg, TypeDouble, "Source Drain gap", :default =&gt; 22.0.um, :hidden =&gt; false)
-      param(:with_pcont, TypeBoolean, "Use polysilicon contact", :default =&gt; true)
+      param(:with_pcont, TypeBoolean, "Use external TiN contact", :default =&gt; true)
       param(:with_via, TypeBoolean, "Put Via over contacts", :default =&gt; true, :hidden =&gt; false)
       param(:with_sdcont, TypeBoolean, "Use source/drain contact", :default =&gt; true)
       param(:with_nsubcont, TypeBoolean, "Use nsub contact", :default =&gt; false, :hidden =&gt; false)
