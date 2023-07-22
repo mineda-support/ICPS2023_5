@@ -15,7 +15,7 @@
  <menu-path/>
  <interpreter>ruby</interpreter>
  <dsl-interpreter-name/>
- <text># ICPS2023_5 PCells v0.44 July 22nd 2023 Copy right by S. Moriyama (Anagix Corporation)
+ <text># ICPS2023_5 PCells v0.45 July 22nd 2023 Copy right by S. Moriyama (Anagix Corporation)
 # based on Mineda2022_6 v0.44 Feb. 3rd 2023
 module ICPS2023_5
 
