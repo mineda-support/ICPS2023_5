@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<klayout-macro>
+ <description>autoplace for ICPS2023_5</description>
+ <version/>
+ <category/>
+ <prolog/>
+ <epilog/>
+ <doc/>
+ <autorun>false</autorun>
+ <autorun-early>false</autorun-early>
+ <priority>0</priority>
+ <shortcut/>
+ <show-in-menu>false</show-in-menu>
+ <group-name/>
+ <menu-path/>
+ <interpreter>ruby</interpreter>
+ <dsl-interpreter-name/>
+ <text>module MyMacro
+ 
+  include RBA
+
+  layout = MinedaAutoPlace.new(res: $res || 'R_ndiff', cap: $cap || 'Pdiff_cap',
+                                            grid: $grid || 5, xscale: $xscale || 1000, yscale: $yscale || 1500,
+                                            wmax: $wmax || 100 )
+  layout.autoplace 
+
+end
+</text>
+</klayout-macro>
