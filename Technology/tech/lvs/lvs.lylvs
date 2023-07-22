@@ -15,7 +15,8 @@
  <menu-path>tools_menu.lvs.end</menu-path>
  <interpreter>dsl</interpreter>
  <dsl-interpreter-name>lvs-dsl-xml</dsl-interpreter-name>
- <text># Mineda2022_6 lvs rule v0.3 Feb. 14th, 2023 Copy right by S. Moriyama (Anagix Corporation)
+ <text># ICPS2022_5 lvs rule v0.1 July 20th, 2023 Copy right by S. Moriyama (Anagix Corporation)
+# based on Mineda2022_6 lvs rule v0.3 Feb. 14th, 2023 
 deep
 report_lvs
 mi = MinedaCommon::MinedaInput::new source
