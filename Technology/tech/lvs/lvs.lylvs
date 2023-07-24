@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <klayout-macro>
- <description>temporary for ICPS2023_5</description>
+ <description>LVS for ICPS2023_5</description>
  <version/>
  <category>lvs</category>
  <prolog/>
@@ -15,8 +15,7 @@
  <menu-path>tools_menu.lvs.end</menu-path>
  <interpreter>dsl</interpreter>
  <dsl-interpreter-name>lvs-dsl-xml</dsl-interpreter-name>
- <text># ICPS2022_5 lvs rule v0.1 July 20th, 2023 Copy right by S. Moriyama (Anagix Corporation)
-# based on Mineda2022_6 lvs rule v0.3 Feb. 14th, 2023 
+ <text># Mineda2022_6 lvs rule v0.3 Feb. 14th, 2023 Copy right by S. Moriyama (Anagix Corporation)
 deep
 report_lvs
 mi = MinedaCommon::MinedaInput::new source
@@ -85,9 +84,23 @@ dio = input(17, 0) - mask
 parea = input(18, 0) - mask
 narea = input(19, 0) - mask
 pwl = input(21,0) - mask
-
+=begin
+mask = input(20,0)
+diff = input(*mi.index('DIFF')) - mask
+tin =input(*mi.index('TIN')) - mask
+tin_blk = input(5,1) - mask
+cnt_a = input(*mi.index('CNT')) - mask
+ml1 = input(*mi.index('ML1')) - mask
+via1 = input(*mi.index('VIA1')) -mask
+ml2 = input(*mi.index('ML2')) - mask
+res = input(*mi.index('RES')) -mask
+cap = input(*mi.index('CAP')) - mask
+dio = input(*mi.index('DIO')) - mask
+parea = input(*mi.index('PAREA')) - mask
+narea = input(*mi.index('NAREA')) - mask
+pwl = input(21,0) - mask
 pwl  = parea &amp;&amp; pwl
-
+=end
 # Special layer for bulk terminals
 
 bulk        = polygon_layer
@@ -117,7 +130,6 @@ ndiff       = ndiff - bt_ndiff
 nsd        = ndiff - ngate
 bt_nsd    = bt_ndiff - bt_ngate
 
-
 diff_nores = diff_nores - ngate - pgate
 
 lv_ngate = ngate
@@ -143,9 +155,7 @@ diff_nores = diff - nres - pres - soi_res - ngate - pgate - pdiff_c2 -ndiff_c2
 rs_layer= soi_res.sized(0.5.um) &amp; (diff - soi_res)
 rn_layer = nres.sized(0.5.um) &amp; (diff - nres)
 rp_layer = pres.sized(0.5.um) &amp; (diff - pres)
-#diff_nores.output(50)
-#pdiff_c1.output(20)
-#pdiff_c2.output(21)
+
 # Device extraction  
 # Capacitor extraction
 area_cap = 0.115e-15
@@ -153,14 +163,14 @@ model_name = 'MIMCAP'
 extract_devices(capacitor(model_name, area_cap), {'P1'=&gt;mim_c1, 'P2'=&gt; mim_c2})                         
 
 area_cap = 0.115e-15 # 0.23e-15
-model_name = 'TiNCAP'
+model_name = 'TINCAP'
 extract_devices(capacitor(model_name, area_cap), {'P1'=&gt;tin_c1, 'P2'=&gt; tin_c2})                         
 
-area_cap = 1.73e-15
+area_cap = 1.52e-15
 model_name = 'PDIFFCAP'
 extract_devices(capacitor(model_name, area_cap), {'P1'=&gt;pdiff_c1, 'P2'=&gt; pdiff_c2})                         
 
-area_cap = 1.73e-15
+area_cap = 1.52e-15
 model_name = 'NDIFFCAP'
 extract_devices(capacitor(model_name, area_cap), {'P1'=&gt;ndiff_c1, 'P2'=&gt; ndiff_c2})                         
 
@@ -175,19 +185,21 @@ extract_devices(diode(model_name), { "P" =&gt; pplus, "N" =&gt; nplus, 'tA' =&gt
 
 #Register Extraction
 #sheet_rho = 20 # TiN???
-sheet_rho = ENV['SOI_CMOS_NRES'] ? ENV['SOI_CMOS_NRES'].to_f :  81 # Rndiff
+#sheet_rho = ENV['SOI_CMOS_NRES'] ? ENV['SOI_CMOS_NRES'].to_f :  81 # Rndiff
+sheet_rho = 167
 model_name = "NRES"
 
 extract_devices(resistor(model_name, sheet_rho), {"R" =&gt;  nres, "C" =&gt; rn_layer,
                                                   'tA' =&gt; rn_layer, 'tB'=&gt;rn_layer  })# &amp; pol &amp; via1 &amp; ml1})
-sheet_rho = ENV['SOI_CMOS_PRES'] ? ENV['SOI_CMOS_PRES'].to_f : 5280 # Rpdiff
+#sheet_rho = ENV['SOI_CMOS_PRES'] ? ENV['SOI_CMOS_PRES'].to_f : 5280 # Rpdiff
+sheet_rho = 2000
 model_name = "PRES"
 
 extract_devices(resistor(model_name, sheet_rho), {"R" =&gt;  pres, "C" =&gt; rp_layer,
                                                   'tA' =&gt; rp_layer, 'tB'=&gt;rp_layer  })# &amp; pol &amp; via1 &amp; ml1})
 
 sheet_rho =250e6 # R-SOI
-model_name = "R-SOI"
+model_name = "R_SOI"
 puts soi_res.area
 extract_devices(resistor(model_name, sheet_rho), {"R" =&gt;  soi_res, "C" =&gt; rs_layer,
                                                   'tA' =&gt; rs_layer, 'tB'=&gt;rs_layer  })# &amp; pol &amp; via1 &amp; ml1})

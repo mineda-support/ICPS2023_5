@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <klayout-macro>
- <description>LVS for ICPS2023_5_product</description>
+ <description>LVS for ICPS2023_5 product</description>
  <version/>
  <category>lvs</category>
  <prolog/>
@@ -8,19 +8,63 @@
  <doc/>
  <autorun>false</autorun>
  <autorun-early>false</autorun-early>
+ <priority>0</priority>
  <shortcut/>
  <show-in-menu>true</show-in-menu>
  <group-name>lvs_scripts</group-name>
  <menu-path>tools_menu.lvs.end</menu-path>
  <interpreter>dsl</interpreter>
  <dsl-interpreter-name>lvs-dsl-xml</dsl-interpreter-name>
- <text># Mineda2022_2 lvs rule v0.1 Feb. 12th, 2022 Copy right by S. Moriyama (Anagix Corporation)
-#    v0.2: Feb. 25th, 2022 -- pwl for Body Tie
-#    v0.3: no LVS change for ordinary use but numerous changes in post lvs processing to handle 
-#          connection to PADs using ML1 only
-#    v0.4: March 17, 2022 -- correction for the case (soi_bridge: false) when only 2 PADs are found for MOSFETs
+ <text># Mineda2022_6 lvs rule v0.3 Feb. 14th, 2023 Copy right by S. Moriyama (Anagix Corporation)
 deep
 report_lvs
+mi = MinedaCommon::MinedaInput::new source
+reference, output = mi.get_reference
+exclude = input
+if settings = mi.get_settings
+  load settings
+  if defined? set_blank_layout
+    exclude = set_blank_layout
+  end
+end
+if File.exist? reference
+class MOS4To3ConvertingSpiceReader &lt; RBA::NetlistSpiceReaderDelegate
+
+  def element(circuit, el, name, model, value, nets, params)
+    if el != "M" || nets.size != 4
+      # all other elements are left to the standard implementation
+      return super
+    end
+    # provide a device class
+    cls = circuit.netlist.device_class_by_name(model)
+    if ! cls
+      cls = RBA::DeviceClassMOS3Transistor::new
+      cls.name = model
+      circuit.netlist.add(cls)
+    end
+    # create a device
+    device = circuit.create_device(cls, name)
+    # and configure the device
+    [ "S", "G", "D" ].each_with_index do |t,index|
+      device.connect_terminal(t, nets[index])
+    end
+    # parameters in the model are given in micrometer units, so 
+    # we need to translate the parameter values from SI to um values:
+    device.set_parameter("W", (params["W"] || 0.0) * 1e6)
+    device.set_parameter("L", (params["L"] || 0.0) * 1e6)
+    # TODO: if required, add AS,AD,PS and PD ...
+    return true
+  end
+
+end
+
+# Instantiate a reader using the new delegate
+reader = RBA::NetlistSpiceReader::new(MOS4To3ConvertingSpiceReader::new)
+
+# Import the schematic with this reader
+#schematic("your_schematic.cir", reader)
+  schematic reference, reader
+end
 
 # Drawing layers
 
@@ -37,11 +81,9 @@ ml2 = input(9, 0)
 res = input(15, 0)
 cap = input(16, 0)
 dio = input(17, 0)
-parea = input(3, 0)
-narea = input(2, 0)
+parea = input(2, 0)
+narea = input(3, 0)
 pwl = input(13,0)
-
-#pwl  = parea &amp;&amp; pwl ???
 
 # Special layer for bulk terminals
 
@@ -58,11 +100,14 @@ diff_nores = diff - res - cap - diode
 ndiff       = diff_nores.overlapping(narea)
 pdiff       = diff_nores.overlapping(parea)
 
-ngate       = pdiff - parea   # .sized(-2.0.um)
+ngate       = ndiff - narea   # .sized(-2.0.um)
 #pgate       = pdiff &amp; tin
-nsd          = pdiff - ngate
-pgate      = ndiff -narea    # .sized(-2.0.um)
-psd         = ndiff - pgate
+nsd          = ndiff - ngate
+nsd.output(9,0)
+pgate      = pdiff -parea    # .sized(-2.0.um)
+psd         = pdiff - pgate
+psd.output(10,0)
+
 =begin
 #bt_ngate  = ndiff &amp; tin.interacting(tin_blk)
 ngate      = ngate - bt_ngate
@@ -110,15 +155,15 @@ model_name = 'MIMCAP'
 extract_devices(capacitor(model_name, area_cap), {'P1'=&gt;mim_c1, 'P2'=&gt; mim_c2})                         
 
 area_cap = 0.115e-15 # 0.23e-15
-model_name = 'TiNCAP'
+model_name = 'TINCAP'
 extract_devices(capacitor(model_name, area_cap), {'P1'=&gt;tin_c1, 'P2'=&gt; tin_c2})                         
 
-area_cap = 1.73e-15
-model_name = 'NDIFFCAP'
+area_cap = 1.52e-15
+model_name = 'PDIFFCAP'
 extract_devices(capacitor(model_name, area_cap), {'P1'=&gt;pdiff_c1, 'P2'=&gt; pdiff_c2})                         
 
-area_cap = 1.73e-15
-model_name = 'PDIFFCAP'
+area_cap = 1.52e-15
+model_name = 'NDIFFCAP'
 extract_devices(capacitor(model_name, area_cap), {'P1'=&gt;ndiff_c1, 'P2'=&gt; ndiff_c2})                         
 
 
@@ -132,36 +177,36 @@ extract_devices(diode(model_name), { "P" =&gt; pplus, "N" =&gt; nplus, 'tA' =&gt
 
 #Register Extraction
 #sheet_rho = 20 # TiN???
-sheet_rho = ENV['SOI_CMOS_NRES'] ? ENV['SOI_CMOS_NRES'].to_f :  81 # Rndiff
+#sheet_rho = ENV['SOI_CMOS_NRES'] ? ENV['SOI_CMOS_NRES'].to_f :  81 # Rndiff
+sheet_rho = 167
 model_name = "NRES"
 
 extract_devices(resistor(model_name, sheet_rho), {"R" =&gt;  nres, "C" =&gt; rn_layer,
                                                   'tA' =&gt; rn_layer, 'tB'=&gt;rn_layer  })# &amp; pol &amp; via1 &amp; ml1})
-sheet_rho = ENV['SOI_CMOS_PRES'] ? ENV['SOI_CMOS_PRES'].to_f : 5280 # Rpdiff
+#sheet_rho = ENV['SOI_CMOS_PRES'] ? ENV['SOI_CMOS_PRES'].to_f : 5280 # Rpdiff
+sheet_rho = 2000
 model_name = "PRES"
 
 extract_devices(resistor(model_name, sheet_rho), {"R" =&gt;  pres, "C" =&gt; rp_layer,
                                                   'tA' =&gt; rp_layer, 'tB'=&gt;rp_layer  })# &amp; pol &amp; via1 &amp; ml1})
 
 sheet_rho =250e6 # R-SOI
-model_name = "R-SOI"
+model_name = "R_SOI"
 puts soi_res.area
 extract_devices(resistor(model_name, sheet_rho), {"R" =&gt;  soi_res, "C" =&gt; rs_layer,
                                                   'tA' =&gt; rs_layer, 'tB'=&gt;rs_layer  })# &amp; pol &amp; via1 &amp; ml1})
 
 # PMOS transistor device extraction
-extract_devices(mos3("PMOS"), { "SD" =&gt; psd, "G" =&gt; pgate, 
+extract_devices(mos3("PMOS"), { "SD" =&gt; psd, "G" =&gt; lv_pgate, 
                                 "tS" =&gt; psd, "tD" =&gt; psd, "tG" =&gt;tin })
 # NMOS transistor device extraction
-extract_devices(mos3("NMOS"), { "SD" =&gt; nsd, "G" =&gt; ngate,  
+extract_devices(mos3("NMOS"), { "SD" =&gt; nsd, "G" =&gt; lv_ngate,  
                                 "tS" =&gt; nsd, "tD" =&gt; nsd, "tG" =&gt;tin})
-                                
 =begin                                
                                 # NMOS transistor device extraction
 extract_devices(mos4("NMOS4"), { "SD" =&gt; bt_nsd, "G" =&gt; bt_ngate, "W" =&gt; pwl, 
                                 "tS" =&gt; bt_nsd, "tD" =&gt; bt_nsd, "tG" =&gt;tin, "tW" =&gt; pwl })
 =end
-
 # Define connectivity for netlist extraction
 
 # -layer
@@ -202,6 +247,7 @@ connect(ncnt,cnt_d)
 # Global connections
 # connect_global(bulk, "SUBSTRATE")
 
+=begin
 sdir = File.dirname source.path
 ext_name = File.extname source.path
 target = File.basename(source.path).sub(ext_name, '')
@@ -227,7 +273,7 @@ if File.exist? target+'.yaml'
   end
 end
 #output = "#{target}_output.cir"
-
+=end
 # -------------------------------------------------------------------
 # Netlist and compare
 
@@ -277,7 +323,7 @@ def get_trans cell, trans, map
  trans
 end
 
-report_netlist "#{lvs_work}/#{target}.l2ndb"
+report_netlist mi.report_netlist_file
 
 $map = {}
 trans = get_trans l2n_data.internal_top_cell, RBA::ICplxTrans.new(0,0), $map
@@ -300,10 +346,12 @@ def lvs_postprocess ml1, target, mark
       puts device_name = "#{name}@#{tran} in #{circuit_name}@#{trans2}"
       pcell_parameters[tran] = params
       devices[device_name] = [name, tran]
+      nets = []
       pins.each{|x, y|
         probe_point = RBA::Point::new((x/dbu).to_i, (y/dbu).to_i)
-        net = l2n_data.probe_net(ml1.data, probe_point)
-        if net
+        if net = l2n_data.probe_net(ml1.data, probe_point)
+          next if nets.include? net
+          nets &lt;&lt; net
           # net.each_subcircuit_pin{|p| circuit_name ||= p.subcircuit.circuit.name}
           print(" Net at #{probe_point*dbu}: #{net.name} #{net.circuit.name} =&gt; ")
           shapes = l2n_data.shapes_of_net(net, ml1.data, true)
@@ -315,15 +363,18 @@ def lvs_postprocess ml1, target, mark
             if circuit_name == net.circuit.name &amp;&amp; trans2
               s = s.transformed(RBA::CplxTrans.from_s(trans2).to_itrans(dbu))
             end
-            if s.area == 70000*70000 &amp;&amp; s.perimeter == 70000*4
+            if s.area == 60000*60000 &amp;&amp; s.perimeter == 60000*4
+              puts "PAD60 @[#{s.bbox.center.x*dbu}, #{s.bbox.center.y*dbu}]"
+              devices[device_name] &lt;&lt; [(s.bbox.center.x*dbu-30.0).round(1), (s.bbox.center.y*dbu-30.0).round(1)]
+            elsif s.area == 70000*70000 &amp;&amp; s.perimeter == 70000*4
               puts "PAD70 @[#{s.bbox.center.x*dbu}, #{s.bbox.center.y*dbu}]"
               devices[device_name] &lt;&lt; [(s.bbox.center.x*dbu-35.0).round(1), (s.bbox.center.y*dbu-35.0).round(1)]
-          #  elsif s.area == 100000*100000 &amp;&amp; s.perimeter == 100000*4
-          #    puts "PAD100 @[#{s.bbox.center.x*dbu}, #{s.bbox.center.y*dbu}]"
-          #    devices[device_name] &lt;&lt; [(s.bbox.center.x*dbu-50.0).round(1), (s.bbox.center.y*dbu-50.0).round(1)]
-          #  elsif s.area == 150000*150000 &amp;&amp; s.perimeter == 150000*4
-          #    puts "PAD150 @[#{s.bbox.center.x*dbu}, #{s.bbox.center.y*dbu}]"
-          #    devices[device_name] &lt;&lt; [(s.bbox.center.x*dbu-75.0).round(1), (s.bbox.center.y*dbu-75.0).round(1)]
+            elsif s.area == 100000*100000 &amp;&amp; s.perimeter == 100000*4
+              puts "PAD100 @[#{s.bbox.center.x*dbu}, #{s.bbox.center.y*dbu}]"
+              devices[device_name] &lt;&lt; [(s.bbox.center.x*dbu-50.0).round(1), (s.bbox.center.y*dbu-50.0).round(1)]
+            elsif s.area == 150000*150000 &amp;&amp; s.perimeter == 150000*4
+              puts "PAD150 @[#{s.bbox.center.x*dbu}, #{s.bbox.center.y*dbu}]"
+              devices[device_name] &lt;&lt; [(s.bbox.center.x*dbu-75.0).round(1), (s.bbox.center.y*dbu-75.0).round(1)]
             end
           }
          else
@@ -336,7 +387,7 @@ def lvs_postprocess ml1, target, mark
   puts "*** pcell parameters for selected devices gathered ***"
   require 'yaml'
   puts devices.to_yaml
-  #File.open('lvs_work/devices_and_pcell_parameters.yaml', 'w'){|f| f.puts [devices, pcell_parameters].to_yaml}
+  File.open('lvs_work/devices_and_pcell_parameters.yaml', 'w'){|f| f.puts [devices, pcell_parameters].to_yaml}
   pcell_devices_to_measurement_points target, devices, pcell_parameters
   measurement_points_for_pcell_devices target, ml1, pcell_parameters
 end
@@ -351,7 +402,8 @@ def pcell_devices_to_measurement_points target, devices, pcell_parameters
   p = Axlsx::Package.new
   wb = p.workbook
   sheets = {}
-  types = {}
+  # types = {}
+  types = []
   files = {} 
   uniq_pins = {}
   devices.each_pair{|device, values|
@@ -373,10 +425,12 @@ def pcell_devices_to_measurement_points target, devices, pcell_parameters
     }
     xincr = (xmax-xmin).to_i
     yincr = (ymax-ymin).to_i 
-    types[name] || types[name] = []
-    types[name] &lt;&lt; [xincr, yincr] unless types[name].include? [xincr, yincr]      
-    type = types[name].find_index{|a| a == [xincr, yincr]}
-    fname = "#{name}#{type+1}_#{xincr}x#{yincr}"
+    # types[name] || types[name] = []
+    # types[name] &lt;&lt; [xincr, yincr] unless types[name].include? [xincr, yincr]   
+    types &lt;&lt; [xincr, yincr] unless types.include? [xincr, yincr]     
+    #type = types[name].find_index{|a| a == [xincr, yincr]}
+    group = types.find_index{|a| a == [xincr, yincr]}
+    fname = "#{name}@#{group+1}_#{xincr}x#{yincr}"
     files[fname] ||= []
     uniq_pins[fname] ||= []
     unless uniq_pins[fname].include? [xmin, ymin]
@@ -565,9 +619,9 @@ def find_nets_sub n1, n2, ml1
   end
 end
 
-TYPE = {'mp' =&gt; 'PMOS', 'mn' =&gt; 'NMOS', 'rp' =&gt; 'PRES', 'rn' =&gt; 'NRES',
-        'Mp' =&gt; 'PMOS', 'Mn' =&gt; 'NMOS', 'R_pdiff' =&gt; 'PRES', 'R_ndiff' =&gt; 'NRES'}
-MOS_param_keys = ['l', 'w', 'n', 'sq_dcont', 'soi_bridge', 'Orientation']
+#TYPE = {'mp' =&gt; 'PMOS', 'mn' =&gt; 'NMOS', 'rp' =&gt; 'PRES', 'rn' =&gt; 'NRES',
+#        'Mp' =&gt; 'PMOS', 'Mn' =&gt; 'NMOS', 'R_pdiff' =&gt; 'PRES', 'R_ndiff' =&gt; 'NRES'}
+MOS_param_keys = ['l', 'w', 'n', 'with_pcont', 'with_sdcont', 'Orientation']
 R_param_keys = ['l', 'w', 'm', 'n', 's', 'ho', 'rval', 'p', 'Orientation']
 
 def xlsx_out_single lines, filename, origin=nil
@@ -606,18 +660,30 @@ def xlsx_out_single lines, filename, origin=nil
     keys.each{|k|
       values &lt;&lt; params[k]
     }
-    sheet.add_row [''] * values.size
-    count = count + 1
-    values.each_with_index{|v, i|
-      sheet.rows[count].cells[i].value = v
-    }
+    # sheet.add_row [''] * values.size
+    #count = count + 1
+    #values.each_with_index{|v, i|
+    #  sheet.rows[count].cells[i].value = v
+    #}
+    sheet.add_row values
   }
   p.serialize(filename)
 end
 
+def type_trans type
+  case type
+  when 'Nch'
+    'N'
+  when 'Pch'
+    'P'
+  else
+    type
+  end
+end
+
 def xlsx_out wb, sheets, fname, lines, origin=nil
-  fname =~ /((\D+)\d+)_(-*[0-9]+)x(-*[0-9]+).*\.csv/
-  name = $1; type = $2; xincr = $3.to_i; yincr = $4.to_i
+  fname =~ /((\D+)@\d+)_(-*[0-9]+)x(-*[0-9]+).*\.csv/
+  name = $1; type = type_trans $2; xincr = $3.to_i; yincr = $4.to_i
 
   lines.each_line{|l|
     puts l
@@ -650,47 +716,29 @@ def xlsx_out wb, sheets, fname, lines, origin=nil
     keys.each{|k|
       values &lt;&lt; params[k]
     }
-    sheet.add_row [''] * values.size
+    #sheet.add_row [''] * values.size
     # count = count + 1
-    sheets[type][1] = sheets[type][1] + 1 
-    count = sheets[type][1]
-    values.each_with_index{|v, i|
-      sheet.rows[count].cells[i].value = v
-    }
+    #sheets[type][1] = sheets[type][1] + 1 
+    #count = sheets[type][1]
+    #values.each_with_index{|v, i|
+    #  sheet.rows[count].cells[i].value = v
+    #}
+    sheet.add_row values
   }
 end
 
-Dir.chdir(sdir){
-  if File.exist? File.join(sdir, 'lvs_work', target+'.pins.txt')
-    lvs_postprocess ml1, target, input(6, 0)
+Dir.chdir(File.dirname source.path){
+  if File.exist? File.join('lvs_work', mi.target+'.pins.txt')
+    lvs_postprocess ml1, mi.target, input(6, 0)
   end
 }
-=begin
-     if File.exist? "#{lvs_work}/#{target}_postprocess.rb"
-       load "#{lvs_work}/#{target}_postprocess.rb"
-       # lvs_postprocess ml2
-       Dir.chdir(sdir){
-         lvs_postprocess ml2, target
-       }
-     end
-=end 
-# Import the schematic with this reader
-#schematic("your_schematic.cir", reader)
 
-if File.exist? reference
-    schematic reference, reader
-    if File.exist? "#{lvs_work}/#{target}_rc_ext_settings.rb"
-      load "#{lvs_work}/#{target}_rc_ext_settings.rb"
-      rc_ext_settings
-    end
-    # Netlist vs. netlist
-    compare
-    slink = "#{lvs_work}/#{File.basename output}.txt"
-    File.delete slink if File.exist?(slink)
-    if /mswin32|mingw/ =~ RUBY_PLATFORM
-    # system "WSL cd #{lvs_work}; ln -s ../#{File.basename output}.txt"
-    else
-      File.symlink "../#{File.basename output}", slink if (File.directory?(lvs_work) &amp;&amp; !File.symlink?(slink))
-    end
-end</text>
+mi.lvs(reference, output, lvs_data, l2n_data, is_deep?) {
+  if settings
+    lvs_settings
+  end
+  compare
+}
+mi.make_symlink output
+</text>
 </klayout-macro>

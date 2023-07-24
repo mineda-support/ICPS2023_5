@@ -15,15 +15,25 @@
  <menu-path/>
  <interpreter>ruby</interpreter>
  <dsl-interpreter-name/>
- <text># get_reference v0.1, July 13, 2023 copy right Seijiro Moriyama (Anagix Corp.)
+ <text># get_reference v0.2, July 24 2023 copy right Seijiro Moriyama (Anagix Corp.)
 module MyMacro
   include RBA
   #include MinedaLVSpreprop
             
   MinedaLVS.new.lvs_go 'ICPS2023_5', {
-    device: {NMOS: 'NCH', PMOS: 'PCH'},
+    device: {NMOS: 'NCH', PMOS: 'PCH',
+      MIMCAP: 'CAP', TINCAP: 'CAP',
+      PDIFFCAP: 'CAP', NDIFFCAP: 'CAP',
+      NRES: 'RES', PRES: 'RES',
+      R_SOI: 'RES'},
     tolerance: {RES: {R: {relative: 0.03}},
-                 CAP: {C: {relative: 0.03}}},
+                    NRES: {R: {relative: 0.03}},
+                    PRES: {R: {relative: 0.03}},
+                    R_SOI: {R: {relative: 0.03}},
+                    MIMCAP: {C: {relative: 0.03}},
+                    TINCAP: {C: {relative: 0.03}},
+                    PDIFFCAP: {C: {relative: 0.03}},
+                    NDIFFCAP: {C: {relative: 0.03}}},
     flatten_circuit: ['Nch*', 'Pch*'] 
   }  
 end
