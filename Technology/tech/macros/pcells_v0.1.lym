@@ -15,7 +15,7 @@
  <menu-path/>
  <interpreter>ruby</interpreter>
  <dsl-interpreter-name/>
- <text># ICPS2023_5 PCells v0.45 July 22nd 2023 Copy right by S. Moriyama (Anagix Corporation)
+ <text># ICPS2023_5 PCells v0.46 Aug. 1st 2023 Copy right by S. Moriyama (Anagix Corporation)
 # based on Mineda2022_6 v0.44 Feb. 3rd 2023
 module ICPS2023_5
 
@@ -24,7 +24,7 @@ module ICPS2023_5
   ICPS2023_5.constants.member?(:Pch) &amp;&amp; remove_const(:Pch)
   ICPS2023_5.constants.member?(:R_ndiff) &amp;&amp; remove_const(:R_ndiff)
   ICPS2023_5.constants.member?(:R_pdiff) &amp;&amp; remove_const(:R_pdiff)
-  ICPS2023_5.constants.member?(:R_soi) &amp;&amp; remove_const(:R_soi)
+  # ICPS2023_5.constants.member?(:R_soi) &amp;&amp; remove_const(:R_soi)
   # ICPS2023_5.constants.member?(:MIM_cap) &amp;&amp; remove_const(:MIM_cap)
   ICPS2023_5.constants.member?(:Ndiff_cap) &amp;&amp; remove_const(:Ndiff_cap) 
   ICPS2023_5.constants.member?(:Pdiff_cap) &amp;&amp; remove_const(:Pdiff_cap) 
@@ -148,7 +148,7 @@ module ICPS2023_5
                               tin_block: tin_block_index}
     end
   end
-
+=begin
   class R_soi &lt; MinedaResistor
     include MinedaPCell
     def initialize
@@ -196,7 +196,7 @@ module ICPS2023_5
       set_rval(sheet_resistance * l / w)
     end    
   end
-
+=end
   class R_ndiff &lt; R_soi
     include RBA
     
@@ -608,7 +608,7 @@ module ICPS2023_5
       layout.register_pcell("Pch", Pch::new)
       layout.register_pcell("R_ndiff", R_ndiff::new)
       layout.register_pcell("R_pdiff", R_pdiff::new)
-      layout.register_pcell("R_soi", R_soi::new)
+      # layout.register_pcell("R_soi", R_soi::new)
       # layout.register_pcell("MIM_cap", MIM_cap::new)
       layout.register_pcell("Ndiff_cap", Ndiff_cap::new)
       layout.register_pcell("Pdiff_cap", Pdiff_cap::new)

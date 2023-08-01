@@ -5,7 +5,7 @@
  <group/>
  <dbu>0.001</dbu>
  <base-path/>
- <original-base-path>C:\Users\seiji\KLayout\salt\ICPS2023_5\Technology\tech</original-base-path>
+ <original-base-path>C:\Users\seijirom\KLayout\salt\ICPS2023_5\Technology\tech</original-base-path>
  <layer-properties_file>ICPS2023_5.lyp</layer-properties_file>
  <add-other-layers>true</add-other-layers>
  <reader-options>
@@ -70,6 +70,7 @@
    <read-lef-with-def>true</read-lef-with-def>
    <macro-resolution-mode>default</macro-resolution-mode>
    <separate-groups>false</separate-groups>
+   <joined-paths>false</joined-paths>
    <map-file/>
   </lefdef>
   <mebes>
