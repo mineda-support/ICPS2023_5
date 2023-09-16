@@ -15,7 +15,7 @@
  <menu-path/>
  <interpreter>ruby</interpreter>
  <dsl-interpreter-name/>
- <text># ICPS2023_5 PCells v0.46 Aug. 1st 2023 Copy right by S. Moriyama (Anagix Corporation)
+ <text># ICPS2023_5 PCells v0.461 Sep. 15th 2023 Copy right by S. Moriyama (Anagix Corporation)
 # based on Mineda2022_6 v0.44 Feb. 3rd 2023
 module ICPS2023_5
 
@@ -148,7 +148,7 @@ module ICPS2023_5
                               tin_block: tin_block_index}
     end
   end
-=begin
+
   class R_soi &lt; MinedaResistor
     include MinedaPCell
     def initialize
@@ -196,7 +196,7 @@ module ICPS2023_5
       set_rval(sheet_resistance * l / w)
     end    
   end
-=end
+
   class R_ndiff &lt; R_soi
     include RBA
     
