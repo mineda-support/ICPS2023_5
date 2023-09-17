@@ -15,7 +15,7 @@
  <menu-path/>
  <interpreter>ruby</interpreter>
  <dsl-interpreter-name/>
- <text># ICPS2023_5 PCells v0.461 Sep. 15th 2023 Copy right by S. Moriyama (Anagix Corporation)
+ <text># ICPS2023_5 PCells v0.462 Sep. 16th 2023 Copy right by S. Moriyama (Anagix Corporation)
 # based on Mineda2022_6 v0.44 Feb. 3rd 2023
 module ICPS2023_5
 
@@ -44,6 +44,7 @@ module ICPS2023_5
       # param(:n, TypeInt, "Number of fingers", :default =&gt; 1)
       param(:dg, TypeDouble, "Dumbbell gap", :default =&gt; 4.um, :hidden =&gt; false)
       param(:sdg, TypeDouble, "Source Drain gap", :default =&gt; 22.0.um, :hidden =&gt; false)
+      param(:dsl, TypeDouble, "Minimum Dumbbell shaft length", :default =&gt; 22.0.um, :hidden =&gt; false)
       param(:with_pcont, TypeBoolean, "Use external TiN contact", :default =&gt; true)
       param(:with_via, TypeBoolean, "Put Via over contacts", :default =&gt; true, :hidden =&gt; false)
       param(:with_sdcont, TypeBoolean, "Use source/drain contact", :default =&gt; true)   
@@ -101,6 +102,7 @@ module ICPS2023_5
       param(:l, TypeDouble, "Pch l", :default =&gt; 10.0.um)
       param(:dg, TypeDouble, "Dumbbell gap", :default =&gt; 4.um, :hidden =&gt; false)
       param(:sdg, TypeDouble, "Source Drain gap", :default =&gt; 22.0.um, :hidden =&gt; false)
+      param(:dsl, TypeDouble, "Minimum Dumbbell shaft length", :default =&gt; 22.0.um, :hidden =&gt; false)
       param(:with_pcont, TypeBoolean, "Use external TiN contact", :default =&gt; true)
       param(:with_via, TypeBoolean, "Put Via over contacts", :default =&gt; true, :hidden =&gt; false)
       param(:with_sdcont, TypeBoolean, "Use source/drain contact", :default =&gt; true)

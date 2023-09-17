@@ -15,37 +15,7 @@
  <menu-path/>
  <interpreter>ruby</interpreter>
  <dsl-interpreter-name/>
- <text>def metalize_bridges cell, value
-  cell.each_inst{|inst|
-    puts inst.cell.name
-    if inst.cell.name == 'Bridge' || inst.cell.name == 'Nbridge'
-      inst.change_pcell_parameter 'mb', value
-    elsif inst.cell.child_instances &gt; 0
-      metalize_bridges inst.cell, value
-    end
-    puts inst.pcell_parameters_by_name
-  }
-end
-
-module MyMacro
- 
-include RBA
-app = RBA::Application.instance
-mw = app.main_window
-lv = mw.current_view
-if lv == nil
-  raise "No view selected"
-end
-
-cv = lv.active_cellview
-if !cv.is_valid?
-  raise "No cell or no layout found"
-end
-  # Enter your Ruby code here ..
-
-puts 'hello'
-metalize_bridges(cv.cell, false)
-
-end
+ <text>mb = MinedaBridge.new
+mb.metalize_bridges(nil)
 </text>
 </klayout-macro>
