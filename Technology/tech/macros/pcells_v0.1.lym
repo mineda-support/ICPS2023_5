@@ -15,7 +15,7 @@
  <menu-path/>
  <interpreter>ruby</interpreter>
  <dsl-interpreter-name/>
- <text># ICPS2023_5 PCells v0.462 Sep. 16th 2023 Copy right by S. Moriyama (Anagix Corporation)
+ <text># ICPS2023_5 PCells v0.463 Sep. 18th 2023 Copy right by S. Moriyama (Anagix Corporation)
 # based on Mineda2022_6 v0.44 Feb. 3rd 2023
 module ICPS2023_5
 
@@ -439,14 +439,14 @@ module ICPS2023_5
         create_box indices[:m1], x-vs/2, y-vs/2, x+vs/2, y+vs/2
         index = :cnt
       end
-      # vu2 = vs/2 - u1
-      vu2 =vs/2 - u1/2
+      vu2 = vs/2 - u1
+      # vu2 =vs/2 - u1/2
       create_box indices[index], x-vu2, y-vu2, x+vu2, y+vu2
     end
 
     def create_contacts_horizontally_bridge_special indices, w, x0, y, vs, u1, body, head, ys, nb=nil
       nb ||= 0
-      pitch = vs+u1/4  # cnt distance &gt; 5 um
+      pitch = vs # +u1/4  # cnt distance &gt; 5 um
       n = (w/pitch).to_i
       if ys &lt; y
         up = 1
@@ -470,9 +470,9 @@ module ICPS2023_5
         end
       }
       x1 = x0-w/2
-      y1 = y-vs/2-u1/8*down - pitch*nb*down
+      y1 = y-vs/2 - pitch*nb*down # -u1/8*down 
       x2 = x0+w/2
-      y2 = y+vs/2+u1/8*up + pitch*nb*up
+      y2 = y+vs/2 + pitch*nb*up # +u1/8*up 
       create_box indices[:m1],  x1, y1, x2 , y2
       create_box indices[body],  x1, y1, x2 , y2
       create_box indices[:narea],  x1-u1/2 ,y1-u1/2 ,x2+u1/2, y2+u1/2 if body == :diff
@@ -480,7 +480,7 @@ module ICPS2023_5
     
     def create_contacts_vertically_bridge_special indices, w, x, y0, vs, u1, body, head, xs, nb = nil
       nb ||= 0
-      pitch = vs+u1/4  # cnt distance &gt; 5 um
+      pitch = vs # +u1/4  # cnt distance &gt; 5 um
       n = (w/pitch).to_i
       if x &lt; xs
         left = 1
@@ -502,9 +502,9 @@ module ICPS2023_5
           vs2 = vs + u1/4
         end
       }
-      x1 = x-vs/2-u1/8*left - pitch*nb*left
+      x1 = x-vs/2- pitch*nb*left # -u1/8*left 
       y1 =  y0-w/2
-      x2 =  x+vs/2+u1/8*right + pitch*nb*right
+      x2 =  x+vs/2 + pitch*nb*right # +u1/8*right
       y2 =  y0+w/2
       create_box indices[:m1], x1 ,y1 ,x2, y2
       create_box indices[body], x1 ,y1 ,x2, y2
@@ -514,7 +514,7 @@ module ICPS2023_5
     def produce_impl_core(indices, body, head)
       rw = (w/layout.dbu).to_i
       rl = (l/layout.dbu).to_i
-      via_size = 9.0.um # via size (fixed)
+      via_size = 13.0.um # 9.0.um # via size (fixed)
       vs = (via_size/layout.dbu).to_i
       sl = s.split(/[,\s]+/).map{|s| (s.to_f/layout.dbu).to_i}
       rrl = rl.abs + sl.map{|a| a.abs}.sum
