@@ -1,0 +1,31 @@
+v {xschem version=3.0.0 file_version=1.1}
+G {type=capacitor
+format="@name @pinlist @value m=@m"
+tedax_format="footprint @name @footprint 
+value @name @value
+device @name @device
+@comptag"
+verilog_ignore=true
+template="name=C1
+m=1
+value=1p
+footprint=1206
+device=\"ceramic capacitor\""
+
+}
+V {}
+S {}
+E {}
+L 4 10 21 -10 21 {}
+L 4 0 0 0 21 {}
+L 4 0 30 0 60 {}
+L 4 -14 30 -14 25 {}
+L 4 13 30 -14 30 {}
+L 4 13 25 13 30 {}
+L 4 13 25 13 25 {}
+B 5 -2 -2 2 2 {name=PLUS dir=in}
+T {PLUS} 0 0 0  0.2 0.2 {layer=13}
+B 5 -2 58 2 62 {name=MINUS dir=in}
+T {MINUS} 0 60 0  0.2 0.2 {layer=13}
+T {@value} 20 40 0 0 0.20 0.2 {}
+T {@name} 20 0 0 0 0.2 0.2 {}

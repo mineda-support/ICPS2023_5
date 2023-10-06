@@ -1,0 +1,32 @@
+v {xschem version=3.0.0 file_version=1.2 }
+G {}
+K {type=pmos4
+format="@spiceprefix@name @pinlist @model w=@w l=@l @extra as=@as ps=@ps ad=@ad pd=@pd m=@m"
+template="name=M1 model=pch w=5u l=0.18u as=0 ps=0 ad=0 pd=0 m=1"
+
+}
+V {}
+S {}
+E {}
+L 4 15 -15 15 15 {}
+L 4 20 13 40 13 {}
+L 4 40 13 40 30 {}
+L 4 29 -14 40 -14 {}
+L 4 40 -30 40 -14 {}
+L 4 0 0 15 0 {}
+L 4 20 0 40 0 {}
+L 4 20 -20 20 20 {}
+L 4 20 -14 29 -18 {}
+L 4 20 -14 29 -11 {}
+L 4 29 -18 29 -11 {}
+B 5 38 28 42 32 {name=D dir=in}
+B 5 -2 -2 2 2 {name=G dir=in}
+B 5 38 -32 42 -28 {name=S dir=in}
+B 5 38 -2 42 2 {name=B dir=in}
+T {D} 40 30 0 0 0.2 0.2 {layer=13}
+T {G} 0 0 0 0 0.2 0.2 {layer=13}
+T {S} 40 -30 0 0 0.2 0.2 {layer=13}
+T {B} 40 0 0 0 0.2 0.2 {layer=13}
+T {@value} 50 10 0 0 0.2 0.2 {}
+T {@name} 50 -30 0 0 0.2 0.2 {}
+T {@w\\/@l\\/@m} 20 20 0 0 0.2 0.2 {}

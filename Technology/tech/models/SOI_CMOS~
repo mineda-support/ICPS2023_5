@@ -1,0 +1,2 @@
+.include ./mosfet_model_YSS_SOI_PMOS.txt
+.include ./mosfet_model_YSS_SOI_NMOS.txt
