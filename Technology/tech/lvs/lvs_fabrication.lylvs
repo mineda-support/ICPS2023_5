@@ -30,7 +30,7 @@
 * See the License for the specific language governing permissions and
 * limitations under the License
 =end
-# ICPS2023_5 lvs rule v0.3 Feb. 14th, 2023 Copy right by S. Moriyama (Anagix Corporation)
+# ICPS2023_5 lvs rule v0.4 Oct. 13th, 2023 Copy right by S. Moriyama (Anagix Corporation)
 deep
 report_lvs
 mi = MinedaCommon::MinedaInput::new source
@@ -173,11 +173,11 @@ area_cap = 0.115e-15 # 0.23e-15
 model_name = 'TINCAP'
 extract_devices(capacitor(model_name, area_cap), {'P1'=&gt;tin_c1, 'P2'=&gt; tin_c2})                         
 
-area_cap = 1.52e-15
+area_cap = 2.3e-15
 model_name = 'PDIFFCAP'
 extract_devices(capacitor(model_name, area_cap), {'P1'=&gt;pdiff_c1, 'P2'=&gt; pdiff_c2})                         
 
-area_cap = 1.52e-15
+area_cap = 2.3e-15
 model_name = 'NDIFFCAP'
 extract_devices(capacitor(model_name, area_cap), {'P1'=&gt;ndiff_c1, 'P2'=&gt; ndiff_c2})                         
 
@@ -193,13 +193,13 @@ extract_devices(diode(model_name), { "P" =&gt; pplus, "N" =&gt; nplus, 'tA' =&gt
 #Register Extraction
 #sheet_rho = 20 # TiN???
 #sheet_rho = ENV['SOI_CMOS_NRES'] ? ENV['SOI_CMOS_NRES'].to_f :  81 # Rndiff
-sheet_rho = 167
+sheet_rho = 180
 model_name = "NRES"
 
 extract_devices(resistor(model_name, sheet_rho), {"R" =&gt;  nres, "C" =&gt; rn_layer,
                                                   'tA' =&gt; rn_layer, 'tB'=&gt;rn_layer  })# &amp; pol &amp; via1 &amp; ml1})
 #sheet_rho = ENV['SOI_CMOS_PRES'] ? ENV['SOI_CMOS_PRES'].to_f : 5280 # Rpdiff
-sheet_rho = 2000
+sheet_rho = 1200
 model_name = "PRES"
 
 extract_devices(resistor(model_name, sheet_rho), {"R" =&gt;  pres, "C" =&gt; rp_layer,

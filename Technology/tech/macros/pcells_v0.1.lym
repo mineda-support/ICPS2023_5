@@ -30,7 +30,7 @@
 * See the License for the specific language governing permissions and
 * limitations under the License
 =end
-# ICPS2023_5 PCells v0.463 Sep. 18th 2023 Copy right by S. Moriyama (Anagix Corporation)
+# ICPS2023_5 PCells v0.47 Oct.. 13th 2023 Copy right by S. Moriyama (Anagix Corporation)
 # based on Mineda2022_6 v0.44 Feb. 3rd 2023
 module ICPS2023_5
 
@@ -230,7 +230,7 @@ module ICPS2023_5
       create_box indices[:narea], x1-u1/2, y1-u1/2-rw_ho, x2+u1/2, y2+u1/2
     end
     def coerce_parameters_impl
-      sheet_resistance = ENV['SOI_CMOS_NRES'] ? ENV['SOI_CMOS_NRES'].to_f : 81.0  # AIST?:180
+      sheet_resistance = 180
       set_rval(sheet_resistance * l / w)
     end
   end
@@ -255,7 +255,7 @@ module ICPS2023_5
       create_box indices[:nwl], x1-u1*2, y1-u1*2-rw_ho, x2+u1*2, y2+u1*2 if use_nwell
     end
     def coerce_parameters_impl
-      sheet_resistance = ENV['SOI_CMOS_PRES'] ? ENV['SOI_CMOS_PRES'].to_f : 5280  # AIST?: 1520
+      sheet_resistance = 1200
       set_rval(sheet_resistance * l / w)
     end
   end
@@ -351,7 +351,7 @@ module ICPS2023_5
   class Ndiff_cap &lt; Diff_cap
 
     def coerce_parameters_impl
-      area_cap = 1.72e-15
+      area_cap = 2.3e-15
       set_cval(area_cap * l * w)
     end
 
@@ -364,7 +364,7 @@ module ICPS2023_5
   class Pdiff_cap &lt; Diff_cap
 
     def coerce_parameters_impl
-      area_cap = 1.72e-15
+      area_cap = 2.3e-15
       set_cval(area_cap * l * w)
     end
 
