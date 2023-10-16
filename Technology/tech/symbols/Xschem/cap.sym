@@ -1,0 +1,28 @@
+v {xschem version=2.9.7 file_version=1.1}
+G {type=capacitor
+format="@name @pinlist @value m=@m"
+tedax_format="footprint @name @footprint 
+value @name @value
+device @name @device
+@comptag"
+verilog_ignore=true
+template="name=C1
+m=1
+value=1p
+footprint=1206
+device=\"ceramic capacitor\""
+
+}
+V {}
+S {}
+E {}
+L 4 10 22 10 40 {}
+L 4 10 17 10 0 {}
+L 4 0 17 20 17 {}
+L 4 0 22 20 22 {}
+B 5 8 -2 12 2 {name=A dir=in pinnumber=1}
+T {@#0:pinnumber} 7 -6 0 1 0.2 0.2 {layer=13}
+B 5 8 38 12 42 {name=B dir=in pinnumber=2}
+T {@#1:pinnumber} 7 34 0 1 0.2 0.2 {layer=13}
+T {@value} 15 35 0 0 0.20 0.2 {}
+T {@name} 15 5 0 0 0.2 0.2 {}

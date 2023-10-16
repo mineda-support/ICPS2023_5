@@ -1,0 +1,19 @@
+v {xschem version=3.0.0 file_version=1.1}
+G {type=
+
+}
+V {}
+S {}
+E {}
+L 4 0 60 0 35 {}
+L 4 -10 35 10 35 {}
+L 4 0 20 0 0 {}
+L 4 -10 20 10 20 {}
+L 4 10 20 0 35 {}
+L 4 0 35 -10 20 {}
+B 5 -2 -2 2 2 {name=PLUS dir=in}
+T {PLUS} 0 0 0  0.2 0.2 {layer=13}
+B 5 -2 58 2 62 {name=MINUS dir=in}
+T {MINUS} 0 60 0  0.2 0.2 {layer=13}
+T {@value} 30 40 0 0 0.20 0.2 {}
+T {@name} 30 20 0 0 0.2 0.2 {}
