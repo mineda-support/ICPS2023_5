@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<klayout-macro>
+ <description>ICPS2023_5 PDK User Manual</description>
+ <version/>
+ <category/>
+ <prolog/>
+ <epilog/>
+ <doc/>
+ <autorun>false</autorun>
+ <autorun-early>false</autorun-early>
+ <priority>0</priority>
+ <shortcut/>
+ <show-in-menu>true</show-in-menu>
+ <group-name/>
+ <menu-path/>
+ <interpreter>ruby</interpreter>
+ <dsl-interpreter-name/>
+ <text>module MyMacro
+ 
+  cmd = case RbConfig::CONFIG['host_os']
+    when /mswin|mingw|cygwin/ then "start "
+    when /darwin/ then "open "
+    when /linux|bsd/ then "xdg-open "
+    else raise "No OS detected"
+  end
+    
+  b = system cmd + "https://www.dropbox.com/scl/fi/84uzdzux0urhsd05mfxmb/ICPS2023_5-PDKv0.71.paper?rlkey=yuxkk9qneusfwuql2f5dann33&amp;dl=0"
+
+end
+</text>
+</klayout-macro>

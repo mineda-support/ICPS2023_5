@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<klayout-macro>
+ <description/>
+ <version/>
+ <category/>
+ <prolog/>
+ <epilog/>
+ <doc/>
+ <autorun>false</autorun>
+ <autorun-early>false</autorun-early>
+ <priority>0</priority>
+ <shortcut/>
+ <show-in-menu>false</show-in-menu>
+ <group-name/>
+ <menu-path/>
+ <interpreter>ruby</interpreter>
+ <dsl-interpreter-name/>
+ <text>module MyMacro
+ 
+  cmd = case RbConfig::CONFIG['host_os']
+    when /mswin|mingw|cygwin/ then "start "
+    when /darwin/ then "open "
+    when /linux|bsd/ then "xdg-open "
+    else raise "No OS detected"
+  end
+  home = ENV['HOME'] || ENV['HOMEPATH']
+  b = system cmd + "file:///#{home}/KLayout/salt/ICPS2023_5/Technology/doc/PDK_minimalFabSOICMOS.pdf"
+
+end
+</text>
+</klayout-macro>
