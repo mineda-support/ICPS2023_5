@@ -19,7 +19,7 @@
   include MinedaCommon
   go = ConvertPCells.new 'ICPS2023_5'
   go.do_convert_library_cells({
-    # layer_map: '/home/seijirom/.klayout/salt/PTS06/Technology/tech/OR_to_PTS.txt',
+    layer_map: $layer_map, # = 'c:/Users/seijirom/Klayout/salt/ICPS2023_5/Technology/tech/OR_to_ICPS.txt',
     routing_scale_factor: $rsf || 1, pcell_scale_factor: $psf || 1
   })
 end
