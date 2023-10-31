@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<klayout-macro>
+ <description>ICPS2023_5 PDK Reference Manual</description>
+ <version/>
+ <category/>
+ <prolog/>
+ <epilog/>
+ <doc/>
+ <autorun>false</autorun>
+ <autorun-early>false</autorun-early>
+ <priority>0</priority>
+ <shortcut/>
+ <show-in-menu>true</show-in-menu>
+ <group-name/>
+ <menu-path/>
+ <interpreter>ruby</interpreter>
+ <dsl-interpreter-name/>
+ <text>module MyMacro
+  home = ENV['HOME'] || ENV['HOMEPATH']
+  klayout = '.klayout'  
+  case RbConfig::CONFIG['host_os']
+    when /mswin|mingw|cygwin/ 
+      cmd = "start "
+      klayout = 'KLayout'  
+    when /darwin/
+      cmd = "open "
+    when /linux|bsd/
+      cmd = "xdg-open "
+    else raise "No OS detected"
+  end
+
+  b = system cmd + "file:///#{home}/#{klayout}/salt/ICPS2023_5/Technology/doc/PDK_reference_manual.pdf"
+
+end
+</text>
+</klayout-macro>
