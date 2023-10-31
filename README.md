@@ -1,7 +1,7 @@
 # ICPS2023_5
 
 PDK for minimal Fab LSI fabricaition at AIST ACPS supporting 1st metal only
-SOI CMOS process.
+SOI CMOS process. Made public since Nov.1, 2023.
 
 Following contents are documented in Technology/doc/PDK_minimalFabSOICMOS.pdf
 
@@ -13,6 +13,8 @@ Following contents are documented in Technology/doc/PDK_minimalFabSOICMOS.pdf
     * SPICE Model 
     * PCELL 
     * DRC/LVS Rule
+ 
+PDK_reference_manual.pdf (in Japanese) is available under Technology/doc.
 
 PDK User Manual (in Japanese) is: 
 https://www.dropbox.com/scl/fi/84uzdzux0urhsd05mfxmb/ICPS2023_5-PDKv0.71.paper?rlkey=yuxkk9qneusfwuql2f5dann33&dl=0
