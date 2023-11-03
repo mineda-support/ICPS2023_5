@@ -16,12 +16,14 @@
  <interpreter>ruby</interpreter>
  <dsl-interpreter-name/>
  <text>module MyMacro
-  home = ENV['HOME'] || ENV['HOMEPATH']
+  home = ENV['USERPROFILE'] || ENV['HOME']
   klayout = '.klayout'  
+  ampasand = '&amp;'
   case RbConfig::CONFIG['host_os']
     when /mswin|mingw|cygwin/ 
       cmd = "start "
-      klayout = 'KLayout'  
+      klayout = 'KLayout' 
+      ampasand = ''
     when /darwin/
       cmd = "open "
     when /linux|bsd/
@@ -29,7 +31,7 @@
     else raise "No OS detected"
   end
 
-  b = system cmd + "file:///#{home}/#{klayout}/salt/ICPS2023_5/Technology/doc/PDK_reference_manual.pdf"
+  b = system cmd + "file:///#{home}/#{klayout}/salt/ICPS2023_5/Technology/doc/PDK_reference_manual.pdf" + ampasand
 
 end
 </text>
