@@ -1,0 +1,34 @@
+Circuit: * C:\Users\seijirom\KLayout\salt\ICPS2023_5\Samples\Semicon2023\NAND\nand_min_tb.asc
+
+Error on line 1226 : .model nch nmos  tnom = 25  level = 8  paramchk = 1  mobmod = 1  capmod = 3  fnoimod = 1  soimod = 3  tox = 1.5e-08  xj = 1.5e-007  nch = 1.7e+017  vth0 = 0.20809  k1 = 0.5  k2 = 0  k3 = 80  k3b = 0  w0 = 2.5e-006  nlx = 1.74e-007  vbm = -3.0  dvt0 = 2.2  dvt1 = 0.53  dvt2 = -0.032  dvt0w = 0  dvt1w = 5.3e+006  dvt2w = -0.032  u0 = 670  ua = 2.25e-09  ub = 5.87e-19  uc = -4.65e-11  vsat = 800755.2814  a0 = 1.1164  ags = 0.2656  b0 = 0  b1 = 0  keta = -0.047  a1 = 0  a2 = 0.20782  rdsw = 0  prwb = 0  prwg = 58.7371  wr = 1  wint = 0  lint = 0  dwg = 0  dwb = 0  voff = -0.17284  nfactor = 0.99099  eta0 = 0.08  etab = -0.07  dsub = 0.56  cit = 0  cdsc = 0.00021654  cdscb = 0  cdscd = 0.38995  pclm = 2.9694  pdiblc1 = 0.39  pdiblc2 = 0.0021218  pdiblcb = 0  drout = 0.56  pvag = 0  delta = 0.045152  ngate = 0  alpha0 = 0  beta0 = 30  rsh = 0  xpart = 1  cgso = 5.3e-9  cgdo = 5.3e-9  cgsl = 0  cgdl = 0  cjswg = 5.0e-010  mjswg = 0.33  pbswg = 1  ckappa = 0.6  cf = 0  clc = 1.0e-007  cle = 0.6  dlc = 0  dwc = 0  noff = 1  acde = 1  moin = 15  ute = -1.5  kt1 = -0.11  kt1l = 0  kt2 = 0.022  ua1 = 4.31e-009  ub1 = -7.61e-018  uc1 = -5.6e-011  at = 3.3e+004  prt = 0  tcjswg = 0  af = 1  ef = 1  kf = 0
+	* Unrecognized parameter "fnoimod" -- ignored
+Error on line 1226 : .model nch nmos  tnom = 25  level = 8  paramchk = 1  mobmod = 1  capmod = 3  fnoimod = 1  soimod = 3  tox = 1.5e-08  xj = 1.5e-007  nch = 1.7e+017  vth0 = 0.20809  k1 = 0.5  k2 = 0  k3 = 80  k3b = 0  w0 = 2.5e-006  nlx = 1.74e-007  vbm = -3.0  dvt0 = 2.2  dvt1 = 0.53  dvt2 = -0.032  dvt0w = 0  dvt1w = 5.3e+006  dvt2w = -0.032  u0 = 670  ua = 2.25e-09  ub = 5.87e-19  uc = -4.65e-11  vsat = 800755.2814  a0 = 1.1164  ags = 0.2656  b0 = 0  b1 = 0  keta = -0.047  a1 = 0  a2 = 0.20782  rdsw = 0  prwb = 0  prwg = 58.7371  wr = 1  wint = 0  lint = 0  dwg = 0  dwb = 0  voff = -0.17284  nfactor = 0.99099  eta0 = 0.08  etab = -0.07  dsub = 0.56  cit = 0  cdsc = 0.00021654  cdscb = 0  cdscd = 0.38995  pclm = 2.9694  pdiblc1 = 0.39  pdiblc2 = 0.0021218  pdiblcb = 0  drout = 0.56  pvag = 0  delta = 0.045152  ngate = 0  alpha0 = 0  beta0 = 30  rsh = 0  xpart = 1  cgso = 5.3e-9  cgdo = 5.3e-9  cgsl = 0  cgdl = 0  cjswg = 5.0e-010  mjswg = 0.33  pbswg = 1  ckappa = 0.6  cf = 0  clc = 1.0e-007  cle = 0.6  dlc = 0  dwc = 0  noff = 1  acde = 1  moin = 15  ute = -1.5  kt1 = -0.11  kt1l = 0  kt2 = 0.022  ua1 = 4.31e-009  ub1 = -7.61e-018  uc1 = -5.6e-011  at = 3.3e+004  prt = 0  tcjswg = 0  af = 1  ef = 1  kf = 0
+	* Unrecognized parameter "soimod" -- ignored
+Limiting rise time of source v1 to 0.0002
+Limiting fall time of source v1 to 0.0002
+Limiting rise time of source v2 to 0.0001
+Limiting fall time of source v2 to 0.0001
+Warning: Pd = 0 is less than W.
+Warning: Ps = 0 is less than W.
+Warning: Pd = 0 is less than W.
+Warning: Ps = 0 is less than W.
+Direct Newton iteration for .op point succeeded.
+
+Date: Fri Nov  3 09:46:14 2023
+Total elapsed time: 0.271 seconds.
+
+tnom = 27
+temp = 27
+method = modified trap
+totiter = 4389
+traniter = 4364
+tranpoints = 1813
+accept = 1565
+rejected = 248
+matrix size = 8
+fillins = 0
+solver = Normal
+Avg thread counts: 1.1/1.2/1.2/1.1
+Matrix Compiler1:      18 opcodes  0.4/[0.4]/0.5
+Matrix Compiler2: 636 bytes object code size  0.4/0.5/[0.4]
+
