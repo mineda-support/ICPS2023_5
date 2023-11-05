@@ -1,4 +1,4 @@
-* C:\Users\seijirom\KLayout\salt\ICPS2023_5\Samples\Semicon2023\NAND\nand_chip.asc
+* C:\Users\seiji\KLayout\salt\ICPS2023_5\Samples\Semicon2023\NAND\nand_chip.asc
 XX1 NC_01 NC_02 N001 0 NC_03 nand_min
 M1 NC_04 NC_05 NC_06 NC_07 nch l=10.0U w=10.0U
 M2 NC_08 NC_09 NC_10 NC_11 nch l=10.0U w=10.0U
@@ -39,6 +39,6 @@ M4 N001 B VSS VSS nch l=10.0U w=10.0U
 
 .model NMOS NMOS
 .model PMOS PMOS
-.lib C:\Users\seijirom\AppData\Local\LTspice\lib\cmp\standard.mos
+.lib C:\Users\seiji\AppData\Local\LTspice\lib\cmp\standard.mos
 .backanno
 .end

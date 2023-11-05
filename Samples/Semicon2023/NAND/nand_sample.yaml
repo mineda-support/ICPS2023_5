@@ -1,5 +1,5 @@
 ---
 target: nand_sample
 reference: lvs_work/nand_sample_reference.cir.txt
-netlist: C:/Users/seijirom/KLayout/salt/ICPS2023_5/Samples/Semicon2023/NAND/nand_chip.net
-schematic: C:/Users/seijirom/KLayout/salt/ICPS2023_5/Samples/Semicon2023/NAND/nand_chip.asc
+netlist: C:/Users/seiji/KLayout/salt/ICPS2023_5/Samples/Semicon2023/NAND/nand_chip.net
+schematic: C:/Users/seiji/KLayout/salt/ICPS2023_5/Samples/Semicon2023/NAND/nand_chip.asc

@@ -20,7 +20,8 @@
   go = ConvertPCells.new 'ICPS2023_5'
   go.do_convert_library_cells({
     layer_map: $layer_map, # = 'c:/Users/seijirom/Klayout/salt/ICPS2023_5/Technology/tech/OR_to_ICPS.txt',
-    routing_scale_factor: $rsf || 1, pcell_scale_factor: $psf || 1
+    routing_scale_factor: $rsf || 1, pcell_scale_factor: $psf || 1,
+    force_defaults: [:dg, :use_nwell, :with_nsubcont, :with_psubcont]
   })
 end
 </text>
