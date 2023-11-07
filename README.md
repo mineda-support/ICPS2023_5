@@ -24,6 +24,12 @@ under ~/KLayout/salt (~/.klayout/salt under Linux and MacOS).
 1. https://github.com/mineda-support/AnagixLoader.git
 2. https://github.com/mineda-support/ICPS2023_5.git
 
+Tutorial for Semicon 2023 Minimaf Fab design contest is available:
+https://github.com/mineda-support/Semicon2023-MinimalFab-Design-Contest
+
+Design contest reception period is until Nov. 30, 2023, but you can use 
+the document as a tutorial for using the open source minimal fab PDK with open source EDA.
+
 \***************************************************************************<br>
 \* Copyright 2023 minimalFab Promoting Organization<br>
 \*<br>
