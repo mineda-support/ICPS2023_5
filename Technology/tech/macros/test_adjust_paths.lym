@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<klayout-macro>
+ <description/>
+ <version/>
+ <category/>
+ <prolog/>
+ <epilog/>
+ <doc/>
+ <autorun>false</autorun>
+ <autorun-early>false</autorun-early>
+ <priority>0</priority>
+ <shortcut/>
+ <show-in-menu>false</show-in-menu>
+ <group-name/>
+ <menu-path/>
+ <interpreter>ruby</interpreter>
+ <dsl-interpreter-name/>
+ <text>module MyMacro
+ 
+  include RBA
+
+class AdjustPaths
+  include RBA
+
+  def adjust_paths cell, lv, opts
+    return if cell.is_library_cell
+    puts "*** Adjest Paths for '#{cell.name}"
+    lv.each_layer{|layer_props|
+      paths = 0
+      cell.shapes(layer_props.layer_index).each{|shape|
+        # fix_offgrid(shape, shape.bbox.left, shape.bbox.top)
+        if shape.is_path?
+          path = shape.path
+          path.width = [(path.width*opts[:path_scale]).to_i, opts[:path_min]].max
+          shape.path = path
+          paths = paths + 1
+        elsif shape.is_box?
+          box = shape.box
+          shape.path = box2path box, opts
+        end
+      }
+      puts "paths=#{paths} for layer:#{layer_props.name}" if paths&gt;0
+    }
+
+    child_cells = []
+    cell.each_child_cell{|id| child_cells &lt;&lt; id}
+    child_cells.each{|id|
+      c = cell.layout.cell(id)
+      #puts c.name
+      adjust_paths c, lv, opts
+    }
+  end
+  def current_cellview
+    app = RBA::Application.instance
+    mw = app.main_window
+    lv = mw.current_view
+    if lv == nil
+      raise "No view selected"
+    end
+    cv = lv.active_cellview
+    if !cv.is_valid?
+      raise "No cell or no layout found"
+    end
+    layout = cv.layout
+    @grid ||= app.get_config('grid-micron').to_f
+    @grid_db = (@grid/layout.dbu.round(3)).to_i
+    puts "grid_db = #{@grid_db}"
+    [cv, lv]
+  end
+  def box2path box, opts
+    x1, y1 = [box.p1.x, box.p1.y]
+    x2, y2 = [box.p2.x, box.p2.y]
+    if x2 - x1 &gt; y2 - y1
+      spine = [Point.new(x1, (y1+y2)/2), Point.new(x2, (y1+y2)/2)]
+      width = y2 - y1
+    else
+      spine = [Point.new(y1, (x1+x2)/2), Point.new(y2, (x1+x2)/2)]
+      width = x2 - x1
+    end
+    Path.new spine, [(width*opts[:path_scale]).to_i, opts[:path_min]].max
+  end
+  
+  def do_check
+    cv, lv = current_cellview()
+    layout = cv.layout
+    opts = {path_min: (2.0.um/layout.dbu).to_i,
+              path_scale: 1.2}
+    adjust_paths cv.cell, lv, opts
+  end
+end
+AdjustPaths.new.do_check
+end
+</text>
+</klayout-macro>
