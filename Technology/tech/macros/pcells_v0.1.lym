@@ -30,7 +30,7 @@
 * See the License for the specific language governing permissions and
 * limitations under the License
 =end
-# ICPS2023_5 PCells v0.47 Oct.. 13th 2023 Copy right by S. Moriyama (Anagix Corporation)
+# ICPS2023_5 PCells v0.471 Nov. 15th 2023 Copy right by S. Moriyama (Anagix Corporation)
 # based on Mineda2022_6 v0.44 Feb. 3rd 2023
 module ICPS2023_5
 
@@ -407,7 +407,11 @@ module ICPS2023_5
       else
         rectangle, u1 = produce_impl_core(indices, :tin, :cnt,  via_size, grid)
       end
-    end 
+    end
+    def coerce_parameters_impl
+      sheet_resistance = 20
+      set_rval(sheet_resistance * l / w)
+    end  
   end
   
   class Nbridge &lt; MinedaNbridge
@@ -441,6 +445,10 @@ module ICPS2023_5
       end
       x1, y1, x2, y2 = rectangle
     end
+    def coerce_parameters_impl
+      sheet_resistance = 180
+      set_rval(sheet_resistance * l / w)
+    end 
   end
 
   class ICPS2023_5 &lt; Library
