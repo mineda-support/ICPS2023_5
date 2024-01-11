@@ -12,13 +12,12 @@
 * See the License for the specific language governing permissions and
 * limitations under the License
 
-*.include ./MF_CMOS20240109.txt
 * SPICE file
 * ICPS2023Ver1.01
 * Revised 2024.1.9  
 
 *
-.MODEL nch NMOS
+.MODEL mf_nmos NMOS
 + TNOM = 25
 + VERSION = 3.3.0
 + LEVEL = 8
@@ -161,7 +160,7 @@
 + KF = 0
 
 *
-.MODEL pch PMOS
+.MODEL mf_pmos PMOS
 + TNOM = 25
 + LEVEL = 8
 ******************+ LEVEL = 9
