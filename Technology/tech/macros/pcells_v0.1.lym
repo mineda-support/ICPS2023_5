@@ -30,7 +30,7 @@
 * See the License for the specific language governing permissions and
 * limitations under the License
 =end
-# ICPS2023_5 PCells v0.471 Nov. 15th 2023 Copy right by S. Moriyama (Anagix Corporation)
+# ICPS2023_5 PCells v0.48 August 7th 2024 Copy right by S. Moriyama (Anagix Corporation)
 # based on Mineda2022_6 v0.44 Feb. 3rd 2023
 module ICPS2023_5
 
@@ -289,27 +289,25 @@ module ICPS2023_5
       vs = (s/layout.dbu).to_i
       tin_index = layout.insert_layer(LayerInfo::new(5, 0))
       m1_index = layout.insert_layer(LayerInfo::new(8, 0))
-      m2_index = layout.insert_layer(LayerInfo::new(10, 0))
+      #m2_index = layout.insert_layer(LayerInfo::new(10, 0))
       cap_index = layout.insert_layer(LayerInfo::new(16, 0))
-      via_index = layout.insert_layer(LayerInfo::new(9, 0))
+      #via_index = layout.insert_layer(LayerInfo::new(9, 0))
       #cnt_index = layout.insert_layer(LayerInfo::new(7,0))
       dcont_index = library_cell('dcont', 'ICPS2023_5_Basic', layout)
       pcont_index = library_cell('pcont', 'ICPS2023_5_Basic', layout)
-      via_index = library_cell('Via', 'ICPS2023_5_Basic', layout)
-      indices = {m1: m1_index, m2: m2_index, via: via_index, 
+      #via_index = library_cell('Via', 'ICPS2023_5_Basic', layout)
+      indices = {m1: m1_index, # m2: m2_index, via: via_index, 
                  pol: tin_index, pcont: pcont_index, dcont: dcont_index}
       offset = vs+ u2+u1/2+u1/8
       create_box m1_index, 0, 0, offset + cw +u1, cl
       create_box cap_index, offset, 0, offset + cw, cl
       create_box tin_index, offset, -u1, offset + cw , cl+u2+vs
-      # create_box m2_index, offset, -u1, offset + cw , cl+u2+vs
-      #create_contacts_vertically indices[:via], u1+vs/2, 0, u1+vs/2, cl, vs, u1
-      create_contacts_horizontally indices, u1+vs+u2 + u1/2,  cl + u1+vs/2, 
+      #if use_ml2
+      #  create_box m2_index, offset, -u1, offset + cw , cl+u2+vs
+      #  create_contacts_vertically indices, u1+vs/2, 0, u1+vs/2, cl, vs, u1
+      #end
+      create_contacts_horizontally indices, u1+vs+u2 + u1/2,  
                                    offset + cw, cl + u1+vs/2, vs, u1
-      #create_contacts_horizontally indices, :via, u1+vs+u2 + u1/2,  cl + u1+vs/2, 
-      #                                                         offset + cw, cl + u1+vs/2, vs, u1
-
-
       #          points = [Point::new(offset, vs), Point::new(offset, vs/2+r)]
       #          cell.shapes(pol_index).insert(Path::new(points, rw, vs, vs))
       #          cell.shapes(res_index).insert(Path::new(points, rw, vs/4, vs/4))
@@ -319,10 +317,10 @@ module ICPS2023_5
   class Diff_cap &lt; MinedaDiff_cap
     def initialize
       # Important: initialize the super class
-      super
+      super( {polcnt_outside: ["TiN contact outside?", false]} )
       param(:l, TypeDouble, "Capacitor length", :default =&gt; 100.0.um)
       param(:w, TypeDouble, "Capacitor width", :default =&gt; 100.0.um)
-      param(:cval, TypeDouble, "Capacitor value", :default =&gt; 0, :hidden=&gt; true)
+      param(:cval, TypeDouble, "Capacitor value", :default =&gt; 0, :hidden=&gt; true)   
     end
 
     def produce_impl area_index=nil, well_index=nil
