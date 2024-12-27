@@ -32,7 +32,7 @@
 =end
 # Mineda2022_6 Rule for ICPS SOI CMOS process
 ## v0.1:  based on Mineda2022_2 ver 0.55
-## v0.31 Jan. 14 2023 by S. Moriyama
+## v0.32 Nov. 7 2024 by S. Moriyama
 report("Output database")
 
 ### layout/Production Check input(4,0) SOI for Production
@@ -127,7 +127,7 @@ r_cnt_fix = cnt_via.without_perimeter(20.0.um);r_cnt_fix.output("(CNT-J)CNT-Via 
 m1_via = via1 &amp; ml1 &amp; ml2
 
 puts 'Check Metal/Metal2 &amp; Cont &amp; Via1' #both layout and product
-r_ml1_w = ml1.width(5.0.um);r_ml1_w.output("(ML1-A)Ml1 width &lt;5")
+r_ml1_w = ml1.width(6.0.um);r_ml1_w.output("(ML1-A)Ml1 width &lt;6")
 r_ml1_s = ml1.space(4.0.um); r_ml1_s.output("(ML1-B)Ml1 space &lt; 4")
 r_ml1_cnt_en = ml1.enclosing(cnt,2.0.um);r_ml1_cnt_en.output("(ML1-C)Ml1 enclosing Cnt &lt;2")
 r_via1_w = via1.width(4.0.um);r_via1_w.output("(VIA1-D)Via1 width &lt; 4")
